@@ -26,6 +26,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.postgresql:postgresql'
+    implementation 'org.hibernate.orm:hibernate-envers'
+    implementation 'org.springframework.data:spring-data-envers'
 
     // OpenAPI dependencies
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
@@ -81,16 +83,16 @@ openApiGenerate {
     modelPackage = "com.bnm.personservice.model"
     invokerPackage = "com.bnm.personservice.invoker"
     configOptions = [
-            interfaceOnly    : "true",
-            useTags          : "true",
-            dateLibrary      : "java8",
-            java8            : "true",
-            library          : "spring-boot",
-            useJakartaEe     : "true",
-            useBeanValidation: "true",
-            generateApiTests : "true",
-            generateModelTests: "true",
-            generateApiDocumentation: "true",
+            interfaceOnly             : "true",
+            useTags                   : "true",
+            dateLibrary               : "java8",
+            java8                     : "true",
+            library                   : "spring-boot",
+            useJakartaEe              : "true",
+            useBeanValidation         : "true",
+            generateApiTests          : "true",
+            generateModelTests        : "true",
+            generateApiDocumentation  : "true",
             generateModelDocumentation: "true"
     ]
 }
@@ -103,13 +105,13 @@ task generateJavaClient(type: org.openapitools.generator.gradle.plugin.tasks.Gen
     modelPackage = "com.bnm.personservice.client.model"
     invokerPackage = "com.bnm.personservice.client.invoker"
     configOptions = [
-            dateLibrary: "java8",
-            java8: "true",
-            useJakartaEe: "true",
-            useBeanValidation: "true",
-            generateApiTests: "true",
-            generateModelTests: "true",
-            generateApiDocumentation: "true",
+            dateLibrary               : "java8",
+            java8                     : "true",
+            useJakartaEe              : "true",
+            useBeanValidation         : "true",
+            generateApiTests          : "true",
+            generateModelTests        : "true",
+            generateApiDocumentation  : "true",
             generateModelDocumentation: "true"
     ]
 }
@@ -118,8 +120,8 @@ sourceSets {
     main {
         java {
             srcDirs += [
-                "$buildDir/generated/src/main/java",
-                "$buildDir/generated/java-client/src/main/java"
+                    "$buildDir/generated/src/main/java",
+                    "$buildDir/generated/java-client/src/main/java"
             ]
         }
     }

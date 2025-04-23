@@ -1,9 +1,9 @@
 package com.bnm.personservice.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bnm.personservice.PersonServiceApplication;
 import com.bnm.personservice.TestcontainersConfiguration;
 import com.bnm.personservice.model.Country;
 import com.bnm.personservice.model.CountryCreate;
@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-@SpringBootTest
+@SpringBootTest(classes = PersonServiceApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)

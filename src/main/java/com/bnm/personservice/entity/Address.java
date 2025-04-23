@@ -13,11 +13,13 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name = "addresses", schema = "person")
 @Getter
 @Setter
+@Audited
 public class Address extends BaseEntity {
 
   @Id

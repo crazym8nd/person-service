@@ -14,8 +14,11 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
+@Audited
 @Table(name = "users", schema = "person")
 @Getter
 @Setter
@@ -50,6 +53,7 @@ public class User extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id")
+  @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
   private Address address;
 
   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
