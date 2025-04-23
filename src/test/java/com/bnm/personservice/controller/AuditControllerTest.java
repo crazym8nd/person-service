@@ -8,7 +8,6 @@ import com.bnm.personservice.entity.Country;
 import com.bnm.personservice.repository.CountryRepository;
 import com.bnm.personservice.service.AuditService;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,11 +26,6 @@ class AuditControllerTest {
 
   @Autowired
   private AuditService auditService;
-
-  @AfterEach
-  void cleanup() {
-    countryRepository.deleteAll();
-  }
 
   @Test
   void shouldTrackCountryChanges() {
