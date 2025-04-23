@@ -91,6 +91,14 @@ compileJava {
     dependsOn tasks.openApiGenerate
 }
 
+task generateApiJar(type: Jar) {
+    from sourceSets.main.output
+    include 'com/bnm/personservice/api/**'
+    include 'com/bnm/personservice/model/**'
+    include 'com/bnm/personservice/invoker/**'
+    archiveClassifier = 'api'
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -98,6 +106,8 @@ publishing {
             groupId = 'com.bnm'
             artifactId = 'person-service'
             version = '1.0-SNAPSHOT'
+
+            artifact generateApiJar
         }
     }
     repositories {
