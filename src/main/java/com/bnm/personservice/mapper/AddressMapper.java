@@ -6,6 +6,7 @@ import com.bnm.personservice.model.AddressCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,7 +20,7 @@ public class AddressMapper {
     dto.setCountryId(entity.getCountry().getId());
     dto.setAddress(entity.getAddress());
     dto.setZipCode(entity.getZipCode());
-    dto.setArchived(convertToOffsetDateTime(entity.getArchived()));
+    dto.setArchived(JsonNullable.of(convertToOffsetDateTime(entity.getArchived())));
     dto.setCity(entity.getCity());
     dto.setState(entity.getState());
     return dto;

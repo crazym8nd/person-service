@@ -22,6 +22,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Country'
+              example:
+                - id: 1
+                  name: "Россия"
+                  alpha2: "RU"
+                  alpha3: "RUS"
+                  status: "ACTIVE"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                - id: 2
+                  name: "США"
+                  alpha2: "US"
+                  alpha3: "USA"
+                  status: "ACTIVE"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
     post:
       summary: Создать новую страну
       operationId: createCountry
@@ -31,6 +46,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CountryCreate'
+            example:
+              name: "Германия"
+              alpha2: "DE"
+              alpha3: "DEU"
+              status: "ACTIVE"
       responses:
         '201':
           description: Страна успешно создана
@@ -38,6 +58,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Country'
+              example:
+                id: 3
+                name: "Германия"
+                alpha2: "DE"
+                alpha3: "DEU"
+                status: "ACTIVE"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
 
   /api/v1/countries/{id}:
     get:
@@ -104,6 +132,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Address'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  country_id: 1
+                  address: "ул. Ленина, д. 1"
+                  zip_code: "123456"
+                  city: "Москва"
+                  state: "Московская область"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                  archived: null
     post:
       summary: Создать новый адрес
       operationId: createAddress
@@ -113,6 +151,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AddressCreate'
+            example:
+              country_id: 1
+              address: "ул. Ленина, д. 1"
+              zip_code: "123456"
+              city: "Москва"
+              state: "Московская область"
       responses:
         '201':
           description: Адрес успешно создан
@@ -120,6 +164,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Address'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                country_id: 1
+                address: "ул. Ленина, д. 1"
+                zip_code: "123456"
+                city: "Москва"
+                state: "Московская область"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
 
   /api/v1/addresses/{id}:
     get:
@@ -153,6 +206,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  first_name: "Иван"
+                  last_name: "Иванов"
+                  status: "ACTIVE"
+                  verified_at: "2024-01-01T00:00:00Z"
+                  archived_at: null
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                  address_id: "550e8400-e29b-41d4-a716-446655440001"
     post:
       summary: Создать нового пользователя
       operationId: createUser
@@ -162,6 +225,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserCreate'
+            example:
+              first_name: "Иван"
+              last_name: "Иванов"
+              status: "ACTIVE"
+              address_id: "550e8400-e29b-41d4-a716-446655440001"
       responses:
         '201':
           description: Пользователь успешно создан
@@ -169,6 +237,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                first_name: "Иван"
+                last_name: "Иванов"
+                status: "ACTIVE"
+                verified_at: "2024-01-01T00:00:00Z"
+                archived_at: null
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
+                address_id: "550e8400-e29b-41d4-a716-446655440001"
 
   /api/v1/users/{id}:
     get:
@@ -204,6 +282,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserVerificationUpdate'
+            example:
+              status: "VERIFIED"
+              verified_at: "2024-01-01T00:00:00Z"
       responses:
         '200':
           description: Статус верификации успешно обновлен
@@ -211,6 +292,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                first_name: "Иван"
+                last_name: "Иванов"
+                status: "VERIFIED"
+                verified_at: "2024-01-01T00:00:00Z"
+                archived_at: null
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
+                address_id: "550e8400-e29b-41d4-a716-446655440001"
 
   /api/v1/individuals:
     get:
@@ -225,6 +316,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Individual'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  user_id: "550e8400-e29b-41d4-a716-446655440001"
+                  passport_number: "1234567890"
+                  phone_number: "+79123456789"
+                  email: "ivan@example.com"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
     post:
       summary: Создать новое физическое лицо
       operationId: createIndividual
@@ -234,6 +333,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/IndividualCreate'
+            example:
+              user_id: "550e8400-e29b-41d4-a716-446655440001"
+              passport_number: "1234567890"
+              phone_number: "+79123456789"
+              email: "ivan@example.com"
       responses:
         '201':
           description: Физическое лицо успешно создано
@@ -241,6 +345,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Individual'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                user_id: "550e8400-e29b-41d4-a716-446655440001"
+                passport_number: "1234567890"
+                phone_number: "+79123456789"
+                email: "ivan@example.com"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
 
   /api/v1/individuals/{id}:
     get:
@@ -269,43 +381,45 @@ components:
         id:
           type: integer
           format: int64
+        name:
+          type: string
+          maxLength: 32
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          maxLength: 32
         created:
           type: string
           format: date-time
         updated:
           type: string
           format: date-time
-        name:
-          type: string
-        alpha2:
-          type: string
-        alpha3:
-          type: string
-        status:
-          type: string
-      required:
-        - id
-        - name
-        - alpha2
-        - alpha3
-        - status
 
     CountryCreate:
       type: object
-      properties:
-        name:
-          type: string
-        alpha2:
-          type: string
-        alpha3:
-          type: string
-        status:
-          type: string
       required:
         - name
         - alpha2
         - alpha3
         - status
+      properties:
+        name:
+          type: string
+          maxLength: 32
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          maxLength: 32
 
     Address:
       type: object
@@ -313,51 +427,55 @@ components:
         id:
           type: string
           format: uuid
+        country_id:
+          type: integer
+          format: int64
+        address:
+          type: string
+          maxLength: 128
+        zip_code:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 32
+        state:
+          type: string
+          maxLength: 32
         created:
           type: string
           format: date-time
         updated:
           type: string
           format: date-time
-        countryId:
-          type: integer
-          format: int64
-        address:
-          type: string
-        zipCode:
-          type: string
         archived:
           type: string
           format: date-time
-        city:
-          type: string
-        state:
-          type: string
-      required:
-        - id
-        - created
-        - updated
-        - countryId
-        - address
-        - archived
+          nullable: true
 
     AddressCreate:
       type: object
+      required:
+        - country_id
+        - address
+        - zip_code
+        - city
       properties:
-        countryId:
+        country_id:
           type: integer
           format: int64
         address:
           type: string
-        zipCode:
+          maxLength: 128
+        zip_code:
           type: string
+          maxLength: 32
         city:
           type: string
+          maxLength: 32
         state:
           type: string
-      required:
-        - countryId
-        - address
+          maxLength: 32
 
     User:
       type: object
@@ -365,63 +483,65 @@ components:
         id:
           type: string
           format: uuid
-        secretKey:
+        first_name:
           type: string
+          maxLength: 32
+        last_name:
+          type: string
+          maxLength: 32
+        status:
+          type: string
+          maxLength: 64
+        verified_at:
+          type: string
+          format: date-time
+        archived_at:
+          type: string
+          format: date-time
+          nullable: true
         created:
           type: string
           format: date-time
         updated:
           type: string
           format: date-time
-        firstName:
-          type: string
-        lastName:
-          type: string
-        verifiedAt:
-          type: string
-          format: date-time
-        archivedAt:
-          type: string
-          format: date-time
-        status:
-          type: string
-        addressId:
+        address_id:
           type: string
           format: uuid
-      required:
-        - id
-        - created
-        - updated
-        - verifiedAt
-        - archivedAt
-        - status
 
     UserCreate:
       type: object
+      required:
+        - first_name
+        - last_name
+        - status
+        - address_id
       properties:
-        firstName:
+        first_name:
           type: string
-        lastName:
+          maxLength: 32
+        last_name:
           type: string
-        addressId:
+          maxLength: 32
+        status:
+          type: string
+          maxLength: 64
+        address_id:
           type: string
           format: uuid
-      required:
-        - firstName
-        - lastName
-        - addressId
 
     UserVerificationUpdate:
       type: object
+      required:
+        - status
+        - verified_at
       properties:
         status:
           type: string
-        verifiedAt:
+          maxLength: 64
+        verified_at:
           type: string
           format: date-time
-      required:
-        - status
-        - verifiedAt
 
     Individual:
       type: object
@@ -429,43 +549,42 @@ components:
         id:
           type: string
           format: uuid
-        userId:
+        user_id:
           type: string
           format: uuid
+        passport_number:
+          type: string
+          maxLength: 32
+        phone_number:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          maxLength: 32
         created:
           type: string
           format: date-time
         updated:
           type: string
           format: date-time
-        passportNumber:
-          type: string
-        phoneNumber:
-          type: string
-        email:
-          type: string
-          format: email
-      required:
-        - id
-        - userId
-        - created
-        - updated
 
     IndividualCreate:
       type: object
+      required:
+        - user_id
+        - passport_number
+        - phone_number
+        - email
       properties:
-        userId:
+        user_id:
           type: string
           format: uuid
-        passportNumber:
+        passport_number:
           type: string
-        phoneNumber:
+          maxLength: 32
+        phone_number:
           type: string
+          maxLength: 32
         email:
           type: string
-          format: email
-      required:
-        - userId
-        - passportNumber
-        - phoneNumber
-        - email 
+          maxLength: 32 
