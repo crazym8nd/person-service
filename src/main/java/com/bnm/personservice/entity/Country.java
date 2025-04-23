@@ -6,34 +6,35 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import java.time.Instant;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Entity
 @Table(name = "countries", schema = "person")
+@Getter
+@Setter
 public class Country {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @CreationTimestamp
-    private LocalDateTime created;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @UpdateTimestamp
-    private LocalDateTime updated;
+  @Column(name = "created", nullable = false)
+  private Instant created;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(name = "updated", nullable = false)
+  private Instant updated;
 
-    @Column(nullable = false)
-    private String alpha2;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    @Column(nullable = false)
-    private String alpha3;
+  @Column(name = "alpha2", nullable = false, length = 2)
+  private String alpha2;
 
-    @Column(nullable = false)
-    private String status;
+  @Column(name = "alpha3", nullable = false, length = 3)
+  private String alpha3;
+
+  @Column(name = "status", nullable = false)
+  private String status;
 } 

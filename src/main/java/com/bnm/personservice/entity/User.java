@@ -2,51 +2,56 @@ package com.bnm.personservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
-@Data
 @Entity
 @Table(name = "users", schema = "person")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@Getter
+@Setter
+public class User extends BaseEntity {
 
-    @Column(name = "secret_key")
-    private String secretKey;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(
+      name = "UUID",
+      strategy = "org.hibernate.id.UUIDGenerator"
+  )
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    @CreationTimestamp
-    private LocalDateTime created;
+  @Column(name = "secret_key", length = 32)
+  private String secretKey;
 
-    @UpdateTimestamp
-    private LocalDateTime updated;
+  @Column(name = "first_name", length = 32)
+  private String firstName;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+  @Column(name = "last_name", length = 32)
+  private String lastName;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+  @Column(name = "verified_at", nullable = false)
+  private Instant verifiedAt;
 
-    @Column(name = "verified_at")
-    private LocalDateTime verifiedAt;
+  @Column(name = "archived_at", nullable = false)
+  private Instant archivedAt;
 
-    @Column(name = "archived_at")
-    private LocalDateTime archivedAt;
+  @Column(name = "status", length = 64)
+  private String status;
 
-    @Column(nullable = false)
-    private String status;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "address_id")
+  private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+  private Individual individual;
 } 

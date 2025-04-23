@@ -2,46 +2,55 @@ package com.bnm.personservice.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
-@Data
 @Entity
 @Table(name = "addresses", schema = "person")
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+@Getter
+@Setter
+public class Address extends BaseEntity {
 
-    @CreationTimestamp
-    private LocalDateTime created;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(
+      name = "UUID",
+      strategy = "org.hibernate.id.UUIDGenerator"
+  )
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    @UpdateTimestamp
-    private LocalDateTime updated;
+  @Column(name = "created", nullable = false)
+  private Instant created;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
+  @Column(name = "updated", nullable = false)
+  private Instant updated;
 
-    @Column(nullable = false)
-    private String address;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "country_id", nullable = false)
+  private Country country;
 
-    @Column(name = "zip_code", nullable = false)
-    private String zipCode;
+  @Column(name = "address", nullable = false)
+  private String address;
 
-    private LocalDateTime archived;
+  @Column(name = "zip_code")
+  private String zipCode;
 
-    @Column(nullable = false)
-    private String city;
+  @Column(name = "archived")
+  private Instant archived;
 
-    private String state;
+  @Column(name = "city")
+  private String city;
+
+  @Column(name = "state")
+  private String state;
 } 

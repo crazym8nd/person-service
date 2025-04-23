@@ -1,0 +1,104 @@
+### Получить список стран
+GET http://localhost:8080/api/v1/countries
+Accept: application/json
+
+### Создать новую страну
+POST http://localhost:8080/api/v1/countries
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Россия",
+  "alpha2": "RU",
+  "alpha3": "RUS",
+  "status": "ACTIVE"
+}
+
+### Получить страну по ID
+GET http://localhost:8080/api/v1/countries/1
+Accept: application/json
+
+### Обновить страну
+PUT http://localhost:8080/api/v1/countries/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Российская Федерация",
+  "alpha2": "RU",
+  "alpha3": "RUS",
+  "status": "ACTIVE"
+}
+
+### Удалить страну
+DELETE http://localhost:8080/api/v1/countries/1
+
+### Получить список адресов
+GET http://localhost:8080/api/v1/addresses
+Accept: application/json
+
+### Создать новый адрес
+POST http://localhost:8080/api/v1/addresses
+Content-Type: application/json
+Accept: application/json
+
+{
+  "countryId": 1,
+  "address": "ул. Пушкина, д. 10",
+  "zipCode": "123456",
+  "city": "Москва",
+  "state": "Московская область"
+}
+
+### Получить адрес по ID
+GET http://localhost:8080/api/v1/addresses/0e6566c2-7804-4196-9eb4-98c9df9e00e7
+Accept: application/json
+
+### Получить список пользователей
+GET http://localhost:8080/api/v1/users
+Accept: application/json
+
+### Создать нового пользователя
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Иван",
+  "lastName": "Иванов",
+  "addressId": "0e6566c2-7804-4196-9eb4-98c9df9e00e7"
+}
+
+### Получить пользователя по ID
+GET http://localhost:8080/api/v1/users/21ab4b3b-8c73-4bfd-97ca-a0aa9359731e
+Accept: application/json
+
+### Обновить статус верификации пользователя
+PATCH http://localhost:8080/api/v1/users/21ab4b3b-8c73-4bfd-97ca-a0aa9359731e
+Content-Type: application/json
+Accept: application/json
+
+{
+  "status": "VERIFIED",
+  "verifiedAt": "2024-04-23T12:00:00Z"
+}
+
+### Получить список физических лиц
+GET http://localhost:8080/api/v1/individuals
+Accept: application/json
+
+### Создать новое физическое лицо
+POST http://localhost:8080/api/v1/individuals
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userId": "21ab4b3b-8c73-4bfd-97ca-a0aa9359731e",
+  "passportNumber": "1234567890",
+  "phoneNumber": "+79001234567",
+  "email": "ivan.ivanov@example.com"
+}
+
+### Получить физическое лицо по ID
+GET http://localhost:8080/api/v1/individuals/8640d9df-337a-4975-af07-136c58562b25
+Accept: application/json 

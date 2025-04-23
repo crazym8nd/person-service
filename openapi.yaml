@@ -56,6 +56,210 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Country'
+    put:
+      summary: Обновить страну
+      operationId: updateCountry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountryCreate'
+      responses:
+        '200':
+          description: Страна успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+    delete:
+      summary: Удалить страну
+      operationId: deleteCountry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Страна успешно удалена
+
+  /api/v1/addresses:
+    get:
+      summary: Получить список адресов
+      operationId: getAddresses
+      responses:
+        '200':
+          description: Успешное получение списка адресов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+    post:
+      summary: Создать новый адрес
+      operationId: createAddress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressCreate'
+      responses:
+        '201':
+          description: Адрес успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+
+  /api/v1/addresses/{id}:
+    get:
+      summary: Получить адрес по ID
+      operationId: getAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение адреса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+
+  /api/v1/users:
+    get:
+      summary: Получить список пользователей
+      operationId: getUsers
+      responses:
+        '200':
+          description: Успешное получение списка пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Создать нового пользователя
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/v1/users/{id}:
+    get:
+      summary: Получить пользователя по ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      summary: Обновить статус верификации пользователя
+      operationId: updateUserVerificationStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerificationUpdate'
+      responses:
+        '200':
+          description: Статус верификации успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/v1/individuals:
+    get:
+      summary: Получить список физических лиц
+      operationId: getIndividuals
+      responses:
+        '200':
+          description: Успешное получение списка физических лиц
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Individual'
+    post:
+      summary: Создать новое физическое лицо
+      operationId: createIndividual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualCreate'
+      responses:
+        '201':
+          description: Физическое лицо успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
+
+  /api/v1/individuals/{id}:
+    get:
+      summary: Получить физическое лицо по ID
+      operationId: getIndividualById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение физического лица
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
 
 components:
   schemas:
@@ -101,4 +305,167 @@ components:
         - name
         - alpha2
         - alpha3
-        - status 
+        - status
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        countryId:
+          type: integer
+          format: int64
+        address:
+          type: string
+        zipCode:
+          type: string
+        archived:
+          type: string
+          format: date-time
+        city:
+          type: string
+        state:
+          type: string
+      required:
+        - id
+        - created
+        - updated
+        - countryId
+        - address
+        - archived
+
+    AddressCreate:
+      type: object
+      properties:
+        countryId:
+          type: integer
+          format: int64
+        address:
+          type: string
+        zipCode:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+      required:
+        - countryId
+        - address
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        secretKey:
+          type: string
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        firstName:
+          type: string
+        lastName:
+          type: string
+        verifiedAt:
+          type: string
+          format: date-time
+        archivedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        addressId:
+          type: string
+          format: uuid
+      required:
+        - id
+        - created
+        - updated
+        - verifiedAt
+        - archivedAt
+        - status
+
+    UserCreate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        addressId:
+          type: string
+          format: uuid
+      required:
+        - firstName
+        - lastName
+        - addressId
+
+    UserVerificationUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+        verifiedAt:
+          type: string
+          format: date-time
+      required:
+        - status
+        - verifiedAt
+
+    Individual:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        passportNumber:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - userId
+        - created
+        - updated
+
+    IndividualCreate:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        passportNumber:
+          type: string
+        phoneNumber:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - userId
+        - passportNumber
+        - phoneNumber
+        - email 
