@@ -15,8 +15,8 @@ public class UserMapper {
   public User toDto(final com.bnm.personservice.entity.User entity) {
     final User dto = new User();
     dto.setId(entity.getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreated()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdated()));
+    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
+    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
     dto.setFirstName(entity.getFirstName());
     dto.setLastName(entity.getLastName());
     dto.setStatus(entity.getStatus());

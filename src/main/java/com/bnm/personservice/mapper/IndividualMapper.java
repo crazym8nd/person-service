@@ -15,8 +15,8 @@ public class IndividualMapper {
     final Individual dto = new Individual();
     dto.setId(entity.getId());
     dto.setUserId(entity.getUser().getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreated()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdated()));
+    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
+    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
     dto.setPassportNumber(entity.getPassportNumber());
     dto.setPhoneNumber(entity.getPhoneNumber());
     dto.setEmail(entity.getEmail());

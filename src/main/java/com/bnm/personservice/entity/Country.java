@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,17 +13,11 @@ import lombok.Setter;
 @Table(name = "countries", schema = "person")
 @Getter
 @Setter
-public class Country {
+public class Country extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  @Column(name = "created", nullable = false)
-  private Instant created;
-
-  @Column(name = "updated", nullable = false)
-  private Instant updated;
 
   @Column(name = "name", nullable = false)
   private String name;
@@ -32,9 +25,9 @@ public class Country {
   @Column(name = "alpha2", nullable = false, length = 2)
   private String alpha2;
 
-  @Column(name = "alpha3", nullable = false, length = 3)
+  @Column(name = "alpha3", length = 3)
   private String alpha3;
 
-  @Column(name = "status", nullable = false)
+  @Column(name = "status", length = 64)
   private String status;
 } 

@@ -13,8 +13,8 @@ public class CountryMapper {
   public Country toDto(final com.bnm.personservice.entity.Country entity) {
     final Country dto = new Country();
     dto.setId(entity.getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreated()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdated()));
+    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
+    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
     dto.setName(entity.getName());
     dto.setAlpha2(entity.getAlpha2());
     dto.setAlpha3(entity.getAlpha3());

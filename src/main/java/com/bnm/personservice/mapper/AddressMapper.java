@@ -15,8 +15,8 @@ public class AddressMapper {
   public Address toDto(final com.bnm.personservice.entity.Address entity) {
     final Address dto = new Address();
     dto.setId(entity.getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreated()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdated()));
+    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
+    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
     dto.setCountryId(entity.getCountry().getId());
     dto.setAddress(entity.getAddress());
     dto.setZipCode(entity.getZipCode());
