@@ -1,11 +1,13 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.openapi.generator' version '6.6.0'
 }
 
 group = 'com.bnm'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '17'
 
 java {
 	toolchain {
@@ -21,15 +23,68 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.postgresql:postgresql'
+	
+	// OpenAPI dependencies
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.20'
+	implementation 'io.swagger.core.v3:swagger-models:2.2.20'
+	
+	// Validation dependencies
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+	
+	// Servlet API
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+	
+	// Annotation API
+	implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+	
+	// OpenAPI Generator
+	implementation ('org.openapitools:openapi-generator-gradle-plugin:6.6.0') {
+		exclude group: 'org.slf4j', module: 'slf4j-simple'
+	}
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:postgresql'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+openApiGenerate {
+	generatorName = "spring"
+	inputSpec = "$rootDir/openapi.yaml"
+	outputDir = "$buildDir/generated"
+	apiPackage = "com.bnm.personservice.api"
+	modelPackage = "com.bnm.personservice.model"
+	invokerPackage = "com.bnm.personservice.invoker"
+	configOptions = [
+		interfaceOnly: "true",
+		useTags: "true",
+		dateLibrary: "java8",
+		java8: "true",
+		library: "spring-boot",
+		useJakartaEe: "true",
+		useBeanValidation: "true"
+	]
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs += ["$buildDir/generated/src/main/java"]
+		}
+	}
+}
+
+compileJava {
+	dependsOn tasks.openApiGenerate
 }

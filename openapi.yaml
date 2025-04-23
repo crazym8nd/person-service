@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Person Service API
+  version: 1.0.0
+  description: API для работы с пользователями и их данными
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /api/v1/countries:
+    get:
+      summary: Получить список стран
+      operationId: getCountries
+      responses:
+        '200':
+          description: Успешное получение списка стран
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Country'
+    post:
+      summary: Создать новую страну
+      operationId: createCountry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountryCreate'
+      responses:
+        '201':
+          description: Страна успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+
+  /api/v1/countries/{id}:
+    get:
+      summary: Получить страну по ID
+      operationId: getCountryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение страны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+
+components:
+  schemas:
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        name:
+          type: string
+        alpha2:
+          type: string
+        alpha3:
+          type: string
+        status:
+          type: string
+      required:
+        - id
+        - name
+        - alpha2
+        - alpha3
+        - status
+
+    CountryCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        alpha2:
+          type: string
+        alpha3:
+          type: string
+        status:
+          type: string
+      required:
+        - name
+        - alpha2
+        - alpha3
+        - status 
