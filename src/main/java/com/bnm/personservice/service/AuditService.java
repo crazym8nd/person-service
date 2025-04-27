@@ -1,12 +1,15 @@
 package com.bnm.personservice.service;
 
 import com.bnm.personservice.entity.Address;
+import com.bnm.personservice.entity.Country;
 import com.bnm.personservice.entity.Individual;
 import com.bnm.personservice.entity.User;
 import com.bnm.personservice.mapper.AddressAuditMapper;
+import com.bnm.personservice.mapper.CountryAuditMapper;
 import com.bnm.personservice.mapper.IndividualAuditMapper;
 import com.bnm.personservice.mapper.UserAuditMapper;
 import com.bnm.personservice.model.AddressAuditDTO;
+import com.bnm.personservice.model.CountryAuditDTO;
 import com.bnm.personservice.model.IndividualAuditDTO;
 import com.bnm.personservice.model.UserAuditDTO;
 import jakarta.persistence.EntityManager;
@@ -28,6 +31,7 @@ public class AuditService {
   private final AddressAuditMapper addressAuditMapper;
   private final UserAuditMapper userAuditMapper;
   private final IndividualAuditMapper individualAuditMapper;
+  private final CountryAuditMapper countryAuditMapper;
 
   @Transactional(readOnly = true)
   public <T> List<T> getRevisions(final Class<T> type, final Object id) {
@@ -184,6 +188,50 @@ public class AuditService {
 
     final AddressAuditDTO dto = addressAuditMapper.toDto(address);
     log.debug("Mapped revision {} for address {}: {}", revision, id, dto);
+    return dto;
+  }
+
+  @Transactional(readOnly = true)
+  public List<CountryAuditDTO> getCountryRevisions(final Long id) {
+    final AuditReader auditReader = AuditReaderFactory.get(entityManager);
+    final List<Number> revisions = auditReader.getRevisions(Country.class, id);
+    log.debug("Found {} revisions for country with id {}", revisions.size(), id);
+
+    return revisions.stream()
+        .map(rev -> {
+          final Country country = auditReader.find(Country.class, id, rev);
+          final CountryAuditDTO dto = countryAuditMapper.toDto(country);
+          log.debug("Mapped revision {} for country {}: {}", rev, id, dto);
+          return dto;
+        })
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public CountryAuditDTO getCountryRevision(final Long id, final int revision) {
+    final AuditReader auditReader = AuditReaderFactory.get(entityManager);
+    log.debug("Getting revision {} for country {}", revision, id);
+
+    // Проверяем, существует ли такая ревизия
+    final List<Number> revisions = auditReader.getRevisions(Country.class, id);
+    final boolean revisionExists = revisions.stream()
+        .map(Number::intValue)
+        .anyMatch(rev -> rev == revision);
+
+    if (!revisionExists) {
+      log.warn("Revision {} not found for country {}. Available revisions: {}", revision, id,
+          revisions);
+      return null;
+    }
+
+    final Country country = auditReader.find(Country.class, id, revision);
+    if (country == null) {
+      log.warn("Country not found for id {} and revision {}", id, revision);
+      return null;
+    }
+
+    final CountryAuditDTO dto = countryAuditMapper.toDto(country);
+    log.debug("Mapped revision {} for country {}: {}", revision, id, dto);
     return dto;
   }
 } 

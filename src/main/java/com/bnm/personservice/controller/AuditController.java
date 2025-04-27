@@ -1,7 +1,7 @@
 package com.bnm.personservice.controller;
 
-import com.bnm.personservice.entity.Country;
 import com.bnm.personservice.model.AddressAuditDTO;
+import com.bnm.personservice.model.CountryAuditDTO;
 import com.bnm.personservice.model.IndividualAuditDTO;
 import com.bnm.personservice.model.UserAuditDTO;
 import com.bnm.personservice.service.AuditService;
@@ -55,14 +55,17 @@ public class AuditController {
   }
 
   @GetMapping("/countries/{id}/history")
-  public ResponseEntity<List<Country>> getCountryHistory(@PathVariable final Long id) {
-    return ResponseEntity.ok(auditService.getRevisions(Country.class, id));
+  public ResponseEntity<List<CountryAuditDTO>> getCountryHistory(@PathVariable final Long id) {
+    final List<CountryAuditDTO> history = auditService.getCountryRevisions(id);
+    return ResponseEntity.ok(history);
   }
 
-  @GetMapping("/countries/{id}/revision/{rev}")
-  public ResponseEntity<Country> getCountryRevision(@PathVariable final Long id,
+  @GetMapping("/countries/{id}/revisions/{rev}")
+  public ResponseEntity<CountryAuditDTO> getCountryRevision(
+      @PathVariable final Long id,
       @PathVariable final int rev) {
-    return ResponseEntity.ok(auditService.getRevision(Country.class, id, rev));
+    final CountryAuditDTO revision = auditService.getCountryRevision(id, rev);
+    return revision != null ? ResponseEntity.ok(revision) : ResponseEntity.notFound().build();
   }
 
   @GetMapping("/addresses/{id}/history")
