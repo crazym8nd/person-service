@@ -31,12 +31,6 @@ public class Address extends BaseEntity {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  @Column(name = "created", nullable = false)
-  private Instant created;
-
-  @Column(name = "updated", nullable = false)
-  private Instant updated;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "country_id", nullable = false)
   private Country country;

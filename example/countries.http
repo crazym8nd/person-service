@@ -1,0 +1,42 @@
+### Получить список стран
+GET http://localhost:8080/api/v1/countries
+Accept: application/json
+
+### Получить страну по ID
+GET http://localhost:8080/api/v1/countries/1
+Accept: application/json
+
+### Создать новую страну
+POST http://localhost:8080/api/v1/countries
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Россия",
+  "alpha2": "RU",
+  "alpha3": "RUS",
+  "status": "ACTIVE"
+}
+
+### Обновить страну
+PUT http://localhost:8080/api/v1/countries/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Российская Федерация",
+  "alpha2": "RU",
+  "alpha3": "RUS",
+  "status": "ACTIVE"
+}
+
+### Удалить страну
+DELETE http://localhost:8080/api/v1/countries/1
+
+### Получить историю изменений страны
+GET http://localhost:8080/api/v1/audit/countries/{{countryId}}/history
+Accept: application/json
+
+### Получить конкретную ревизию страны
+GET http://localhost:8080/api/v1/audit/countries/{{countryId}}/revision/{{revisionId}}
+Accept: application/json 

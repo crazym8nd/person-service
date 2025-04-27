@@ -1,0 +1,42 @@
+### Получить список физических лиц
+GET http://localhost:8080/api/v1/individuals
+Accept: application/json
+
+### Получить физическое лицо по ID
+GET http://localhost:8080/api/v1/individuals/{{individualId}}
+Accept: application/json
+
+### Создать новое физическое лицо
+POST http://localhost:8080/api/v1/individuals
+Content-Type: application/json
+Accept: application/json
+
+{
+  "user_id": "38817f90-2e4b-42a7-817b-c6f9bd474ce7",
+  "passport_number": "1234567890",
+  "phone_number": "+79001234567",
+  "email": "ivan.ivanov@example.com"
+}
+
+### Обновить физическое лицо
+PUT http://localhost:8080/api/v1/individuals/{{individualId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "user_id": "38817f90-2e4b-42a7-817b-c6f9bd474ce7",
+  "passport_number": "0987654321",
+  "phone_number": "+79001234567",
+  "email": "ivan.ivanov@example.com"
+}
+
+### Удалить физическое лицо
+DELETE http://localhost:8080/api/v1/individuals/{{individualId}}
+
+### Получить историю изменений физического лица
+GET http://localhost:8080/api/v1/audit/individuals/{{individualId}}/history
+Accept: application/json
+
+### Получить конкретную ревизию физического лица
+GET http://localhost:8080/api/v1/audit/individuals/{{individualId}}/revision/{{revisionId}}
+Accept: application/json 

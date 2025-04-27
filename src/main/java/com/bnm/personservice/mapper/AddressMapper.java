@@ -39,8 +39,6 @@ public class AddressMapper {
     entity.setCity(dto.getCity());
     entity.setState(dto.getState());
     entity.setArchived(Instant.now());
-    entity.setCreated(Instant.now());
-    entity.setUpdated(Instant.now());
     return entity;
   }
 } 

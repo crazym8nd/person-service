@@ -51,7 +51,7 @@ public class User extends BaseEntity {
   @Column(name = "status", length = 64)
   private String status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "address_id")
   @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
   private Address address;

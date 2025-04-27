@@ -17,8 +17,6 @@ CREATE TABLE person.revinfo
 CREATE TABLE person.countries
 (
     id         BIGSERIAL PRIMARY KEY,
-    created    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     name       VARCHAR(32),
@@ -32,8 +30,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE person.addresses
 (
     id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    created    TIMESTAMP NOT NULL,
-    updated    TIMESTAMP NOT NULL,
     created_at TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     country_id BIGINT REFERENCES person.countries (id),
@@ -48,8 +44,6 @@ CREATE TABLE person.users
 (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     secret_key  VARCHAR(32),
-    created     TIMESTAMP NOT NULL,
-    updated     TIMESTAMP NOT NULL,
     created_at  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     first_name  VARCHAR(32),
@@ -64,8 +58,6 @@ CREATE TABLE person.individuals
 (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id         UUID UNIQUE REFERENCES person.users (id),
-    created         TIMESTAMP NOT NULL,
-    updated         TIMESTAMP NOT NULL,
     created_at      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
     passport_number VARCHAR(32),

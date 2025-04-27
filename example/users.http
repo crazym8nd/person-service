@@ -1,0 +1,52 @@
+### Получить список пользователей
+GET http://localhost:8080/api/v1/users
+Accept: application/json
+
+### Получить пользователя по ID
+GET http://localhost:8080/api/v1/users/{{userId}}
+Accept: application/json
+
+### Создать нового пользователя
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "first_name": "Иван",
+  "last_name": "Иванов",
+  "status": "ACTIVE",
+  "address_id": "33b6c63c-9555-4439-9674-0ca899b07017"
+}
+
+### Обновить пользователя
+PUT http://localhost:8080/api/v1/users/{{userId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "first_name": "Иван",
+  "last_name": "Иванов",
+  "status": "ACTIVE",
+  "address_id": "33b6c63c-9555-4439-9674-0ca899b07017"
+}
+
+### Обновить статус верификации пользователя
+PATCH http://localhost:8080/api/v1/users/{{userId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "status": "VERIFIED",
+  "verified_at": "2024-04-23T12:00:00Z"
+}
+
+### Удалить пользователя
+DELETE http://localhost:8080/api/v1/users/{{userId}}
+
+### Получить историю изменений пользователя
+GET http://localhost:8080/api/v1/audit/users/{{userId}}/history
+Accept: application/json
+
+### Получить конкретную ревизию пользователя
+GET http://localhost:8080/api/v1/audit/users/{{userId}}/revision/{{revisionId}}
+Accept: application/json 
