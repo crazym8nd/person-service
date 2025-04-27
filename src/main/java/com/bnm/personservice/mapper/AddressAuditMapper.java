@@ -6,37 +6,39 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.hibernate.envers.RevisionType;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class AddressAuditMapper {
+@Mapper(componentModel = "spring")
+public interface AddressAuditMapper {
 
-  public AddressAudit toDto(final Address entity, final Number revisionNumber,
-      final RevisionType revisionType, final Instant revisionInstant) {
-    if (entity == null) {
-      return null;
-    }
+  @Mapping(source = "entity.id", target = "id")
+  @Mapping(source = "entity.country.id", target = "countryId")
+  @Mapping(source = "entity.address", target = "address")
+  @Mapping(source = "entity.zipCode", target = "zipCode")
+  @Mapping(source = "entity.city", target = "city")
+  @Mapping(source = "entity.state", target = "state")
+  @Mapping(source = "entity.archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
+  @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
+  @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
+  AddressAudit toDto(Address entity, Number revisionNumber, RevisionType revisionType,
+      Instant revisionInstant);
 
-    final AddressAudit dto = new AddressAudit();
-    dto.setId(entity.getId());
-    if (entity.getCountry() != null) {
-      dto.setCountryId(entity.getCountry().getId());
-    }
-    dto.setAddress(entity.getAddress());
-    dto.setZipCode(entity.getZipCode());
-    dto.setCity(entity.getCity());
-    dto.setState(entity.getState());
-    dto.setArchived(convertToOffsetDateTime(entity.getArchived()));
-
-    // Добавляем информацию об аудите
-    dto.setRevisionNumber(revisionNumber.intValue());
-    dto.setRevisionType(AddressAudit.RevisionTypeEnum.fromValue(revisionType.name()));
-    dto.setRevisionInstant(convertToOffsetDateTime(revisionInstant));
-
-    return dto;
+  @Named("numberToInteger")
+  default Integer numberToInteger(final Number number) {
+    return number != null ? number.intValue() : null;
   }
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
+  @Named("mapRevisionType")
+  default AddressAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+    return revisionType != null ? AddressAudit.RevisionTypeEnum.fromValue(revisionType.name())
+        : null;
+  }
+
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
     return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 } 

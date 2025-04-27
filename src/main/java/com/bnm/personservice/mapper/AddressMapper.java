@@ -6,39 +6,35 @@ import com.bnm.personservice.model.AddressCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class AddressMapper {
+@Mapper(componentModel = "spring")
+public interface AddressMapper {
 
-  public Address toDto(final com.bnm.personservice.entity.Address entity) {
-    final Address dto = new Address();
-    dto.setId(entity.getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
-    dto.setAddress(entity.getAddress());
-    dto.setZipCode(entity.getZipCode());
-    dto.setCity(entity.getCity());
-    dto.setState(entity.getState());
-    dto.setArchived(convertToOffsetDateTime(entity.getArchived()));
-    if (entity.getCountry() != null) {
-      dto.setCountryId(entity.getCountry().getId());
-    }
-    return dto;
-  }
+  @Mapping(source = "id", target = "id")
+  @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "address", target = "address")
+  @Mapping(source = "zipCode", target = "zipCode")
+  @Mapping(source = "city", target = "city")
+  @Mapping(source = "state", target = "state")
+  @Mapping(source = "archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "country.id", target = "countryId")
+  Address toDto(com.bnm.personservice.entity.Address entity);
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
     return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 
-  public com.bnm.personservice.entity.Address toEntity(final AddressCreate dto,
-      final Country country) {
-    final com.bnm.personservice.entity.Address entity = new com.bnm.personservice.entity.Address();
-    entity.setAddress(dto.getAddress());
-    entity.setZipCode(dto.getZipCode());
-    entity.setCity(dto.getCity());
-    entity.setState(dto.getState());
-    entity.setCountry(country);
-    return entity;
-  }
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "archived", ignore = true)
+  @Mapping(source = "country", target = "country")
+  com.bnm.personservice.entity.Address toEntity(AddressCreate dto, Country country);
 } 
