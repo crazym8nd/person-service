@@ -1,6 +1,5 @@
-package com.bnm.personservice.controller;
+package com.bnm.personservice.api;
 
-import com.bnm.personservice.api.AuditApi;
 import com.bnm.personservice.model.AddressAudit;
 import com.bnm.personservice.model.CountryAudit;
 import com.bnm.personservice.model.IndividualAudit;

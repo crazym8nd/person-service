@@ -101,7 +101,13 @@ openApiGenerate {
             sourceFolder        : "src/main/java",
             skipDefaultInterface: "true",
             dateLibrary         : "java8",
-            java8               : "true"
+            java8               : "true",
+            useBeanValidation   : "true",
+            useOptional         : "true",
+            useSpringController : "true",
+            implicitHeaders     : "true",
+            useLombok           : "true",
+            generateOperationBody: "true"
     ]
     typeMappings = [
             instant: "java.time.Instant"
