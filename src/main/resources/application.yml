@@ -30,5 +30,6 @@ server:
 
 logging:
   level:
+    com.bnm.personservice: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

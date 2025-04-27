@@ -21,12 +21,12 @@ public class AddressService {
 
   @Transactional(readOnly = true)
   public List<Address> findAll() {
-    return addressRepository.findAll();
+    return addressRepository.findAllWithCountry();
   }
 
   @Transactional(readOnly = true)
   public Address findById(final UUID id) {
-    return addressRepository.findById(id)
+    return addressRepository.findByIdWithCountry(id)
         .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
   }
 
@@ -46,15 +46,28 @@ public class AddressService {
   @Transactional
   public Address updateAddress(final UUID id, final AddressCreate addressCreate) {
     final Address existingAddress = findById(id);
+    final Country country = countryService.findById(addressCreate.getCountryId().longValue());
     existingAddress.setAddress(addressCreate.getAddress());
     existingAddress.setZipCode(addressCreate.getZipCode());
     existingAddress.setCity(addressCreate.getCity());
     existingAddress.setState(addressCreate.getState());
+    existingAddress.setCountry(country);
     return addressRepository.save(existingAddress);
   }
 
   @Transactional
-  public void deleteAddress(final UUID id) {
+  public void delete(final UUID id) {
     addressRepository.deleteById(id);
+  }
+
+  @Transactional
+  public Address update(final UUID id, final Address address) {
+    final Address existingAddress = findById(id);
+    existingAddress.setAddress(address.getAddress());
+    existingAddress.setZipCode(address.getZipCode());
+    existingAddress.setCity(address.getCity());
+    existingAddress.setState(address.getState());
+    existingAddress.setCountry(address.getCountry());
+    return addressRepository.save(existingAddress);
   }
 } 

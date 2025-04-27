@@ -29,4 +29,19 @@ public class IndividualService {
   public Individual create(final Individual individual) {
     return individualRepository.save(individual);
   }
+
+  @Transactional
+  public Individual update(final UUID id, final Individual updatedIndividual) {
+    final Individual existingIndividual = findById(id);
+    existingIndividual.setUser(updatedIndividual.getUser());
+    existingIndividual.setPassportNumber(updatedIndividual.getPassportNumber());
+    existingIndividual.setPhoneNumber(updatedIndividual.getPhoneNumber());
+    existingIndividual.setEmail(updatedIndividual.getEmail());
+    return individualRepository.save(existingIndividual);
+  }
+
+  @Transactional
+  public void delete(final UUID id) {
+    individualRepository.deleteById(id);
+  }
 } 

@@ -192,6 +192,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Address'
+    put:
+      summary: Обновить адрес
+      operationId: updateAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressCreate'
+      responses:
+        '200':
+          description: Адрес успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+    delete:
+      summary: Удалить адрес
+      operationId: deleteAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Адрес успешно удален
 
   /api/v1/users:
     get:
@@ -292,16 +328,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-              example:
-                id: "550e8400-e29b-41d4-a716-446655440000"
-                first_name: "Иван"
-                last_name: "Иванов"
-                status: "VERIFIED"
-                verified_at: "2024-01-01T00:00:00Z"
-                archived_at: null
-                created: "2024-01-01T00:00:00Z"
-                updated: "2024-01-01T00:00:00Z"
-                address_id: "550e8400-e29b-41d4-a716-446655440001"
+    put:
+      summary: Обновить пользователя
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Удалить пользователя
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Пользователь успешно удален
 
   /api/v1/individuals:
     get:
@@ -372,6 +434,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Individual'
+    put:
+      summary: Обновить физическое лицо
+      operationId: updateIndividual
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualCreate'
+      responses:
+        '200':
+          description: Физическое лицо успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
+    delete:
+      summary: Удалить физическое лицо
+      operationId: deleteIndividual
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Физическое лицо успешно удалено
 
 components:
   schemas:

@@ -40,4 +40,19 @@ public class UserService {
     user.setVerifiedAt(Instant.now());
     return userRepository.save(user);
   }
+
+  @Transactional
+  public User update(final UUID id, final User updatedUser) {
+    final User existingUser = findById(id);
+    existingUser.setFirstName(updatedUser.getFirstName());
+    existingUser.setLastName(updatedUser.getLastName());
+    existingUser.setStatus(updatedUser.getStatus());
+    existingUser.setAddress(updatedUser.getAddress());
+    return userRepository.save(existingUser);
+  }
+
+  @Transactional
+  public void delete(final UUID id) {
+    userRepository.deleteById(id);
+  }
 } 
