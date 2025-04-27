@@ -42,14 +42,14 @@ public class User extends BaseEntity {
   @Column(name = "last_name", length = 32)
   private String lastName;
 
-  @Column(name = "verified_at", nullable = false)
-  private Instant verifiedAt;
-
-  @Column(name = "archived_at", nullable = false)
-  private Instant archivedAt;
-
   @Column(name = "status", length = 64)
   private String status;
+
+  @Column(name = "verified_at")
+  private Instant verifiedAt;
+
+  @Column(name = "archived_at")
+  private Instant archivedAt;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "address_id")
