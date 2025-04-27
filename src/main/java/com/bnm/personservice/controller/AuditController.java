@@ -1,87 +1,79 @@
 package com.bnm.personservice.controller;
 
-import com.bnm.personservice.model.AddressAuditDTO;
-import com.bnm.personservice.model.CountryAuditDTO;
-import com.bnm.personservice.model.IndividualAuditDTO;
-import com.bnm.personservice.model.UserAuditDTO;
+import com.bnm.personservice.api.AuditApi;
+import com.bnm.personservice.model.AddressAudit;
+import com.bnm.personservice.model.CountryAudit;
+import com.bnm.personservice.model.IndividualAudit;
+import com.bnm.personservice.model.UserAudit;
 import com.bnm.personservice.service.AuditService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/audit")
 @RequiredArgsConstructor
-public class AuditController {
+public class AuditController implements AuditApi {
 
   private final AuditService auditService;
 
-  @GetMapping("/users/{id}/history")
-  public ResponseEntity<List<UserAuditDTO>> getUserHistory(@PathVariable final UUID id) {
-    final List<UserAuditDTO> history = auditService.getUserRevisions(id);
+  @Override
+  public ResponseEntity<List<UserAudit>> getUserHistory(final UUID id) {
+    final List<UserAudit> history = auditService.getUserRevisions(id);
     if (history.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(history);
   }
 
-  @GetMapping("/users/{id}/revision/{rev}")
-  public ResponseEntity<UserAuditDTO> getUserRevision(@PathVariable final UUID id,
-      @PathVariable final int rev) {
-    final UserAuditDTO revision = auditService.getUserRevision(id, rev);
+  @Override
+  public ResponseEntity<UserAudit> getUserRevision(final UUID id, final Integer rev) {
+    final UserAudit revision = auditService.getUserRevision(id, rev);
     if (revision == null) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(revision);
   }
 
-  @GetMapping("/individuals/{id}/history")
-  public ResponseEntity<List<IndividualAuditDTO>> getIndividualHistory(
-      @PathVariable final UUID id) {
-    final List<IndividualAuditDTO> history = auditService.getIndividualRevisions(id);
+  @Override
+  public ResponseEntity<List<IndividualAudit>> getIndividualHistory(final UUID id) {
+    final List<IndividualAudit> history = auditService.getIndividualRevisions(id);
     if (history.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(history);
   }
 
-  @GetMapping("/individuals/{id}/revision/{rev}")
-  public ResponseEntity<IndividualAuditDTO> getIndividualRevision(@PathVariable final UUID id,
-      @PathVariable final int rev) {
-    final IndividualAuditDTO revision = auditService.getIndividualRevision(id, rev);
+  @Override
+  public ResponseEntity<IndividualAudit> getIndividualRevision(final UUID id, final Integer rev) {
+    final IndividualAudit revision = auditService.getIndividualRevision(id, rev);
     if (revision == null) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(revision);
   }
 
-  @GetMapping("/countries/{id}/history")
-  public ResponseEntity<List<CountryAuditDTO>> getCountryHistory(@PathVariable final Long id) {
-    final List<CountryAuditDTO> history = auditService.getCountryRevisions(id);
+  @Override
+  public ResponseEntity<List<CountryAudit>> getCountryHistory(final Long id) {
+    final List<CountryAudit> history = auditService.getCountryRevisions(id);
     if (history.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(history);
   }
 
-  @GetMapping("/countries/{id}/revisions/{rev}")
-  public ResponseEntity<CountryAuditDTO> getCountryRevision(
-      @PathVariable final Long id,
-      @PathVariable final int rev) {
-    final CountryAuditDTO revision = auditService.getCountryRevision(id, rev);
+  @Override
+  public ResponseEntity<CountryAudit> getCountryRevision(final Long id, final Integer rev) {
+    final CountryAudit revision = auditService.getCountryRevision(id, rev);
     return revision != null ? ResponseEntity.ok(revision) : ResponseEntity.notFound().build();
   }
 
-  @GetMapping("/addresses/{id}/history")
-  public ResponseEntity<List<AddressAuditDTO>> getAddressHistory(@PathVariable final UUID id) {
-    final List<AddressAuditDTO> history = auditService.getAddressRevisions(id);
+  @Override
+  public ResponseEntity<List<AddressAudit>> getAddressHistory(final UUID id) {
+    final List<AddressAudit> history = auditService.getAddressRevisions(id);
     log.debug("Retrieved {} revisions for address {}", history.size(), id);
     if (history.isEmpty()) {
       return ResponseEntity.notFound().build();
@@ -89,12 +81,10 @@ public class AuditController {
     return ResponseEntity.ok(history);
   }
 
-  @GetMapping("/addresses/{id}/revision/{rev}")
-  public ResponseEntity<AddressAuditDTO> getAddressRevision(
-      @PathVariable final UUID id,
-      @PathVariable final int rev) {
+  @Override
+  public ResponseEntity<AddressAudit> getAddressRevision(final UUID id, final Integer rev) {
     log.info("Получение ревизии {} для адреса {}", rev, id);
-    final AddressAuditDTO revision = auditService.getAddressRevision(id, rev);
+    final AddressAudit revision = auditService.getAddressRevision(id, rev);
     if (revision == null) {
       log.warn("Ревизия {} не найдена для адреса {}", rev, id);
       return ResponseEntity.notFound().build();

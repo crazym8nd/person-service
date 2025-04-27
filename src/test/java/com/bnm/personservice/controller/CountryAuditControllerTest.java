@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.bnm.personservice.PersonServiceApplication;
 import com.bnm.personservice.TestcontainersConfiguration;
-import com.bnm.personservice.model.CountryAuditDTO;
+import com.bnm.personservice.model.CountryAudit;
 import com.bnm.personservice.model.CountryCreate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +31,18 @@ import org.springframework.test.web.servlet.MvcResult;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CountryAuditControllerTest {
 
+  private static final String STATUS_ACTIVE = "ACTIVE";
+  private static final String STATUS_INACTIVE = "INACTIVE";
+  private static final String RUSSIA_NAME = "Russia";
+  private static final String RUSSIA_ALPHA2 = "RU";
+  private static final String RUSSIA_ALPHA3 = "RUS";
+  private static final String USA_NAME = "USA";
+  private static final String USA_ALPHA2 = "US";
+  private static final String USA_ALPHA3 = "USA";
+  private static final String FRANCE_NAME = "France";
+  private static final String FRANCE_ALPHA2 = "FR";
+  private static final String FRANCE_ALPHA3 = "FRA";
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -41,10 +53,10 @@ class CountryAuditControllerTest {
   void shouldReturnCountryHistory() throws Exception {
     // Создаем страну
     final CountryCreate countryCreate = new CountryCreate()
-        .name("Russia")
-        .alpha2("RU")
-        .alpha3("RUS")
-        .status("ACTIVE");
+        .name(RUSSIA_NAME)
+        .alpha2(RUSSIA_ALPHA2)
+        .alpha3(RUSSIA_ALPHA3)
+        .status(STATUS_ACTIVE);
 
     // Сохраняем страну
     final MvcResult createResult = mockMvc.perform(post("/api/v1/countries")
@@ -59,10 +71,10 @@ class CountryAuditControllerTest {
 
     // Изменяем статус страны
     final CountryCreate updateRequest = new CountryCreate()
-        .name("Russia")
-        .alpha2("RU")
-        .alpha3("RUS")
-        .status("INACTIVE");
+        .name(RUSSIA_NAME)
+        .alpha2(RUSSIA_ALPHA2)
+        .alpha3(RUSSIA_ALPHA3)
+        .status(STATUS_INACTIVE);
 
     mockMvc.perform(put("/api/v1/countries/{id}", countryId)
             .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +87,7 @@ class CountryAuditControllerTest {
         .andExpect(status().isOk())
         .andReturn();
 
-    final List<CountryAuditDTO> history = objectMapper.readValue(
+    final List<CountryAudit> history = objectMapper.readValue(
         historyResult.getResponse().getContentAsString(),
         new TypeReference<>() {
         }
@@ -85,28 +97,28 @@ class CountryAuditControllerTest {
     assertThat(history).hasSize(2);
 
     // Проверяем первую версию
-    final CountryAuditDTO firstVersion = history.get(0);
-    assertThat(firstVersion.getName()).isEqualTo("Russia");
-    assertThat(firstVersion.getStatus()).isEqualTo("ACTIVE");
-    assertThat(firstVersion.getCreatedAt()).isNotNull();
-    assertThat(firstVersion.getCreatedBy()).isEqualTo("system");
+    final CountryAudit firstVersion = history.get(0);
+    assertThat(firstVersion.getName()).isEqualTo(RUSSIA_NAME);
+    assertThat(firstVersion.getStatus()).isEqualTo(STATUS_ACTIVE);
+    assertThat(firstVersion.getRevisionInstant()).isNotNull();
+    assertThat(firstVersion.getRevisionType()).isEqualTo(CountryAudit.RevisionTypeEnum.ADD);
 
     // Проверяем вторую версию
-    final CountryAuditDTO secondVersion = history.get(1);
-    assertThat(secondVersion.getName()).isEqualTo("Russia");
-    assertThat(secondVersion.getStatus()).isEqualTo("INACTIVE");
-    assertThat(secondVersion.getUpdatedAt()).isNotNull();
-    assertThat(secondVersion.getUpdatedBy()).isEqualTo("system");
+    final CountryAudit secondVersion = history.get(1);
+    assertThat(secondVersion.getName()).isEqualTo(RUSSIA_NAME);
+    assertThat(secondVersion.getStatus()).isEqualTo(STATUS_INACTIVE);
+    assertThat(secondVersion.getRevisionInstant()).isNotNull();
+    assertThat(secondVersion.getRevisionType()).isEqualTo(CountryAudit.RevisionTypeEnum.MOD);
   }
 
   @Test
   void shouldReturnSpecificRevision() throws Exception {
     // Создаем страну
     final CountryCreate countryCreate = new CountryCreate()
-        .name("USA")
-        .alpha2("US")
-        .alpha3("USA")
-        .status("ACTIVE");
+        .name(USA_NAME)
+        .alpha2(USA_ALPHA2)
+        .alpha3(USA_ALPHA3)
+        .status(STATUS_ACTIVE);
 
     // Сохраняем страну
     final MvcResult createResult = mockMvc.perform(post("/api/v1/countries")
@@ -121,27 +133,15 @@ class CountryAuditControllerTest {
 
     // Изменяем статус страны
     final CountryCreate updateRequest = new CountryCreate()
-        .name("USA")
-        .alpha2("US")
-        .alpha3("USA")
-        .status("INACTIVE");
+        .name(USA_NAME)
+        .alpha2(USA_ALPHA2)
+        .alpha3(USA_ALPHA3)
+        .status(STATUS_INACTIVE);
 
     mockMvc.perform(put("/api/v1/countries/{id}", countryId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
-
-    // Получаем историю изменений для определения номера ревизии
-    final MvcResult historyResult = mockMvc.perform(
-            get("/api/v1/audit/countries/{id}/history", countryId))
-        .andExpect(status().isOk())
-        .andReturn();
-
-    final List<CountryAuditDTO> history = objectMapper.readValue(
-        historyResult.getResponse().getContentAsString(),
-        new TypeReference<>() {
-        }
-    );
 
     // Получаем конкретную ревизию (первую версию)
     final MvcResult revisionResult = mockMvc.perform(
@@ -149,26 +149,26 @@ class CountryAuditControllerTest {
         .andExpect(status().isOk())
         .andReturn();
 
-    final CountryAuditDTO revision = objectMapper.readValue(
+    final CountryAudit revision = objectMapper.readValue(
         revisionResult.getResponse().getContentAsString(),
-        CountryAuditDTO.class
+        CountryAudit.class
     );
 
     // Проверяем, что получили правильную версию
-    assertThat(revision.getName()).isEqualTo("USA");
-    assertThat(revision.getStatus()).isEqualTo("ACTIVE");
-    assertThat(revision.getCreatedAt()).isNotNull();
-    assertThat(revision.getCreatedBy()).isEqualTo("system");
+    assertThat(revision.getName()).isEqualTo(USA_NAME);
+    assertThat(revision.getStatus()).isEqualTo(STATUS_ACTIVE);
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(CountryAudit.RevisionTypeEnum.ADD);
   }
 
   @Test
   void shouldReturn404ForNonExistentRevision() throws Exception {
     // Создаем страну
     final CountryCreate countryCreate = new CountryCreate()
-        .name("France")
-        .alpha2("FR")
-        .alpha3("FRA")
-        .status("ACTIVE");
+        .name(FRANCE_NAME)
+        .alpha2(FRANCE_ALPHA2)
+        .alpha3(FRANCE_ALPHA3)
+        .status(STATUS_ACTIVE);
 
     // Сохраняем страну
     final MvcResult createResult = mockMvc.perform(post("/api/v1/countries")
@@ -183,6 +183,17 @@ class CountryAuditControllerTest {
 
     // Пытаемся получить несуществующую ревизию
     mockMvc.perform(get("/api/v1/audit/countries/{id}/revisions/999", countryId))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturn404ForNonExistentCountry() throws Exception {
+    // Пытаемся получить историю несуществующей страны
+    mockMvc.perform(get("/api/v1/audit/countries/{id}/history", 999L))
+        .andExpect(status().isNotFound());
+
+    // Пытаемся получить ревизию несуществующей страны
+    mockMvc.perform(get("/api/v1/audit/countries/{id}/revisions/1", 999L))
         .andExpect(status().isNotFound());
   }
 } 

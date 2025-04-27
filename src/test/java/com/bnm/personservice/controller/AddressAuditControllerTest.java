@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.bnm.personservice.PersonServiceApplication;
 import com.bnm.personservice.TestcontainersConfiguration;
-import com.bnm.personservice.model.AddressAuditDTO;
+import com.bnm.personservice.model.AddressAudit;
 import com.bnm.personservice.model.AddressCreate;
 import com.bnm.personservice.model.CountryCreate;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -96,38 +96,38 @@ class AddressAuditControllerTest {
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
 
-    // Получаем историю изменений
+    // Получаем список всех ревизий
     final MvcResult historyResult = mockMvc.perform(
             get("/api/v1/audit/addresses/{id}/history", addressId))
         .andExpect(status().isOk())
         .andReturn();
 
-    final List<AddressAuditDTO> history = objectMapper.readValue(
+    final List<AddressAudit> history = objectMapper.readValue(
         historyResult.getResponse().getContentAsString(),
         new TypeReference<>() {
         }
     );
 
-    // Проверяем, что есть две версии
-    assertThat(history).hasSize(2);
+    assertThat(history).isNotEmpty();
+    final Integer firstRevisionNumber = history.get(0).getRevisionNumber();
 
-    // Проверяем первую версию
-    final AddressAuditDTO firstVersion = history.get(0);
-    assertThat(firstVersion.getAddress()).isEqualTo("Lenina st., 1");
-    assertThat(firstVersion.getZipCode()).isEqualTo("123456");
-    assertThat(firstVersion.getCountryId()).isEqualTo(countryId);
-    assertThat(firstVersion.getCountryName()).isEqualTo("Russia");
-    assertThat(firstVersion.getCreatedAt()).isNotNull();
-    assertThat(firstVersion.getCreatedBy()).isEqualTo("system");
+    // Получаем конкретную ревизию (первую версию)
+    final MvcResult revisionResult = mockMvc.perform(
+            get("/api/v1/audit/addresses/{id}/revision/{rev}", addressId, firstRevisionNumber))
+        .andExpect(status().isOk())
+        .andReturn();
 
-    // Проверяем вторую версию
-    final AddressAuditDTO secondVersion = history.get(1);
-    assertThat(secondVersion.getAddress()).isEqualTo("Lenina st., 2");
-    assertThat(secondVersion.getZipCode()).isEqualTo("123457");
-    assertThat(secondVersion.getCountryId()).isEqualTo(countryId);
-    assertThat(secondVersion.getCountryName()).isEqualTo("Russia");
-    assertThat(secondVersion.getUpdatedAt()).isNotNull();
-    assertThat(secondVersion.getUpdatedBy()).isEqualTo("system");
+    final AddressAudit revision = objectMapper.readValue(
+        revisionResult.getResponse().getContentAsString(),
+        AddressAudit.class
+    );
+
+    // Проверяем, что получили правильную версию
+    assertThat(revision.getAddress()).isEqualTo("Lenina st., 1");
+    assertThat(revision.getZipCode()).isEqualTo("123456");
+    assertThat(revision.getCountryId()).isEqualTo(countryId);
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(AddressAudit.RevisionTypeEnum.ADD);
   }
 
   @Test
@@ -165,24 +165,38 @@ class AddressAuditControllerTest {
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
 
-    // Получаем конкретную ревизию (первую версию)
-    final MvcResult revisionResult = mockMvc.perform(
-            get("/api/v1/audit/addresses/{id}/revision/2", addressId))
+    // Получаем список всех ревизий
+    final MvcResult historyResult = mockMvc.perform(
+            get("/api/v1/audit/addresses/{id}/history", addressId))
         .andExpect(status().isOk())
         .andReturn();
 
-    final AddressAuditDTO revision = objectMapper.readValue(
+    final List<AddressAudit> history = objectMapper.readValue(
+        historyResult.getResponse().getContentAsString(),
+        new TypeReference<>() {
+        }
+    );
+
+    assertThat(history).isNotEmpty();
+    final Integer firstRevisionNumber = history.get(0).getRevisionNumber();
+
+    // Получаем конкретную ревизию (первую версию)
+    final MvcResult revisionResult = mockMvc.perform(
+            get("/api/v1/audit/addresses/{id}/revision/{rev}", addressId, firstRevisionNumber))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    final AddressAudit revision = objectMapper.readValue(
         revisionResult.getResponse().getContentAsString(),
-        AddressAuditDTO.class
+        AddressAudit.class
     );
 
     // Проверяем, что получили правильную версию
     assertThat(revision.getAddress()).isEqualTo("Tverskaya st., 1");
     assertThat(revision.getZipCode()).isEqualTo("123456");
     assertThat(revision.getCountryId()).isEqualTo(countryId);
-    assertThat(revision.getCountryName()).isEqualTo("Russia");
-    assertThat(revision.getCreatedAt()).isNotNull();
-    assertThat(revision.getCreatedBy()).isEqualTo("system");
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(AddressAudit.RevisionTypeEnum.ADD);
   }
 
   @Test

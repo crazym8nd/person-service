@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class PersonApiImpl implements DefaultApi {
+public class PersonController implements PersonApi {
 
   private final CountryService countryService;
   private final CountryMapper countryMapper;
@@ -62,7 +62,8 @@ public class PersonApiImpl implements DefaultApi {
   }
 
   @Override
-  public ResponseEntity<Country> updateCountry(final Integer id, final CountryCreate countryCreate) {
+  public ResponseEntity<Country> updateCountry(final Integer id,
+      final CountryCreate countryCreate) {
     return ResponseEntity.ok(
         countryMapper.toDto(
             countryService.update(id.longValue(), countryMapper.toEntity(countryCreate))
@@ -103,7 +104,7 @@ public class PersonApiImpl implements DefaultApi {
         addressCreate.getCountryId().longValue());
     return ResponseEntity.ok(
         addressMapper.toDto(
-            addressService.update(id, addressMapper.toEntity(addressCreate,country))
+            addressService.update(id, addressMapper.toEntity(addressCreate, country))
         )
     );
   }
@@ -143,7 +144,8 @@ public class PersonApiImpl implements DefaultApi {
 
   @Override
   public ResponseEntity<User> updateUser(final UUID id, final UserCreate userCreate) {
-    final com.bnm.personservice.entity.Address address = addressService.findById(userCreate.getAddressId());
+    final com.bnm.personservice.entity.Address address = addressService.findById(
+        userCreate.getAddressId());
     return ResponseEntity.ok(
         userMapper.toDto(
             userService.update(id, userMapper.toEntity(userCreate, address))
@@ -178,7 +180,8 @@ public class PersonApiImpl implements DefaultApi {
 
   @Override
   public ResponseEntity<Individual> createIndividual(final IndividualCreate individualCreate) {
-    final com.bnm.personservice.entity.User user = userService.findById(individualCreate.getUserId());
+    final com.bnm.personservice.entity.User user = userService.findById(
+        individualCreate.getUserId());
     return ResponseEntity.ok(
         individualMapper.toDto(
             individualService.create(individualMapper.toEntity(individualCreate, user))
@@ -194,8 +197,10 @@ public class PersonApiImpl implements DefaultApi {
   }
 
   @Override
-  public ResponseEntity<Individual> updateIndividual(final UUID id, final IndividualCreate individualCreate) {
-    final com.bnm.personservice.entity.User user = userService.findById(individualCreate.getUserId());
+  public ResponseEntity<Individual> updateIndividual(final UUID id,
+      final IndividualCreate individualCreate) {
+    final com.bnm.personservice.entity.User user = userService.findById(
+        individualCreate.getUserId());
     return ResponseEntity.ok(
         individualMapper.toDto(
             individualService.update(id, individualMapper.toEntity(individualCreate, user))

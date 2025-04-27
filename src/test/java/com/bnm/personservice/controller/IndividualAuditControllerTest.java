@@ -10,7 +10,7 @@ import com.bnm.personservice.PersonServiceApplication;
 import com.bnm.personservice.TestcontainersConfiguration;
 import com.bnm.personservice.model.AddressCreate;
 import com.bnm.personservice.model.CountryCreate;
-import com.bnm.personservice.model.IndividualAuditDTO;
+import com.bnm.personservice.model.IndividualAudit;
 import com.bnm.personservice.model.IndividualCreate;
 import com.bnm.personservice.model.UserCreate;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,6 +36,27 @@ import org.springframework.test.web.servlet.MvcResult;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class IndividualAuditControllerTest {
 
+  private static final String STATUS_ACTIVE = "ACTIVE";
+  private static final String RUSSIA_NAME = "Russia";
+  private static final String RUSSIA_ALPHA2 = "RU";
+  private static final String RUSSIA_ALPHA3 = "RUS";
+  private static final String ADDRESS = "Lenina st., 1";
+  private static final String ZIP_CODE = "123456";
+  private static final String CITY = "Moscow";
+  private static final String STATE = "Moscow";
+  private static final String FIRST_NAME = "Ivan";
+  private static final String LAST_NAME = "Ivanov";
+  private static final String PASSPORT_NUMBER_1 = "1234 567890";
+  private static final String PASSPORT_NUMBER_2 = "9876 543210";
+  private static final String PASSPORT_NUMBER_3 = "5555 555555";
+  private static final String PHONE_NUMBER_1 = "+7 (999) 123-45-67";
+  private static final String PHONE_NUMBER_2 = "+7 (999) 999-99-99";
+  private static final String EMAIL_1 = "ivan@example.com";
+  private static final String EMAIL_2 = "ivan.ivanov@example.com";
+  private static final String EMAIL_3 = "petr@example.com";
+  private static final String EMAIL_4 = "petr.petrov@example.com";
+  private static final String EMAIL_5 = "alex@example.com";
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -48,10 +69,10 @@ class IndividualAuditControllerTest {
   void setUp() throws Exception {
     // Создаем страну
     final CountryCreate countryCreate = new CountryCreate()
-        .name("Russia")
-        .alpha2("RU")
-        .alpha3("RUS")
-        .status("ACTIVE");
+        .name(RUSSIA_NAME)
+        .alpha2(RUSSIA_ALPHA2)
+        .alpha3(RUSSIA_ALPHA3)
+        .status(STATUS_ACTIVE);
 
     final MvcResult createCountryResult = mockMvc.perform(post("/api/v1/countries")
             .contentType(MediaType.APPLICATION_JSON)
@@ -66,10 +87,10 @@ class IndividualAuditControllerTest {
     // Создаем адрес
     final AddressCreate addressCreate = new AddressCreate()
         .countryId(countryId)
-        .address("Lenina st., 1")
-        .zipCode("123456")
-        .city("Moscow")
-        .state("Moscow");
+        .address(ADDRESS)
+        .zipCode(ZIP_CODE)
+        .city(CITY)
+        .state(STATE);
 
     final MvcResult createAddressResult = mockMvc.perform(post("/api/v1/addresses")
             .contentType(MediaType.APPLICATION_JSON)
@@ -83,10 +104,10 @@ class IndividualAuditControllerTest {
 
     // Создаем пользователя
     final UserCreate userCreate = new UserCreate()
-        .firstName("Ivan")
-        .lastName("Ivanov")
+        .firstName(FIRST_NAME)
+        .lastName(LAST_NAME)
         .addressId(addressId)
-        .status("ACTIVE");
+        .status(STATUS_ACTIVE);
 
     final MvcResult createUserResult = mockMvc.perform(post("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
@@ -104,9 +125,9 @@ class IndividualAuditControllerTest {
     // Создаем физическое лицо
     final IndividualCreate individualCreate = new IndividualCreate()
         .userId(userId)
-        .passportNumber("1234 567890")
-        .phoneNumber("+7 (999) 123-45-67")
-        .email("ivan@example.com");
+        .passportNumber(PASSPORT_NUMBER_1)
+        .phoneNumber(PHONE_NUMBER_1)
+        .email(EMAIL_1);
 
     // Сохраняем физическое лицо
     final MvcResult createResult = mockMvc.perform(post("/api/v1/individuals")
@@ -123,9 +144,9 @@ class IndividualAuditControllerTest {
     // Изменяем физическое лицо
     final IndividualCreate updateRequest = new IndividualCreate()
         .userId(userId)
-        .passportNumber("1234 567890")
-        .phoneNumber("+7 (999) 999-99-99")
-        .email("ivan.ivanov@example.com");
+        .passportNumber(PASSPORT_NUMBER_1)
+        .phoneNumber(PHONE_NUMBER_2)
+        .email(EMAIL_2);
 
     mockMvc.perform(put("/api/v1/individuals/{id}", individualId)
             .contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +159,7 @@ class IndividualAuditControllerTest {
         .andExpect(status().isOk())
         .andReturn();
 
-    final List<IndividualAuditDTO> history = objectMapper.readValue(
+    final List<IndividualAudit> history = objectMapper.readValue(
         historyResult.getResponse().getContentAsString(),
         new TypeReference<>() {
         }
@@ -148,28 +169,22 @@ class IndividualAuditControllerTest {
     assertThat(history).hasSize(2);
 
     // Проверяем первую версию
-    final IndividualAuditDTO firstVersion = history.get(0);
-    assertThat(firstVersion.getPassportNumber()).isEqualTo("1234 567890");
-    assertThat(firstVersion.getPhoneNumber()).isEqualTo("+7 (999) 123-45-67");
-    assertThat(firstVersion.getEmail()).isEqualTo("ivan@example.com");
+    final IndividualAudit firstVersion = history.get(0);
+    assertThat(firstVersion.getPassportNumber()).isEqualTo(PASSPORT_NUMBER_1);
+    assertThat(firstVersion.getPhoneNumber()).isEqualTo(PHONE_NUMBER_1);
+    assertThat(firstVersion.getEmail()).isEqualTo(EMAIL_1);
     assertThat(firstVersion.getUserId()).isEqualTo(userId);
-    assertThat(firstVersion.getFirstName()).isEqualTo("Ivan");
-    assertThat(firstVersion.getLastName()).isEqualTo("Ivanov");
-    assertThat(firstVersion.getStatus()).isEqualTo("ACTIVE");
-    assertThat(firstVersion.getCreatedAt()).isNotNull();
-    assertThat(firstVersion.getCreatedBy()).isEqualTo("system");
+    assertThat(firstVersion.getRevisionInstant()).isNotNull();
+    assertThat(firstVersion.getRevisionType()).isEqualTo(IndividualAudit.RevisionTypeEnum.ADD);
 
     // Проверяем вторую версию
-    final IndividualAuditDTO secondVersion = history.get(1);
-    assertThat(secondVersion.getPassportNumber()).isEqualTo("1234 567890");
-    assertThat(secondVersion.getPhoneNumber()).isEqualTo("+7 (999) 999-99-99");
-    assertThat(secondVersion.getEmail()).isEqualTo("ivan.ivanov@example.com");
+    final IndividualAudit secondVersion = history.get(1);
+    assertThat(secondVersion.getPassportNumber()).isEqualTo(PASSPORT_NUMBER_1);
+    assertThat(secondVersion.getPhoneNumber()).isEqualTo(PHONE_NUMBER_2);
+    assertThat(secondVersion.getEmail()).isEqualTo(EMAIL_2);
     assertThat(secondVersion.getUserId()).isEqualTo(userId);
-    assertThat(secondVersion.getFirstName()).isEqualTo("Ivan");
-    assertThat(secondVersion.getLastName()).isEqualTo("Ivanov");
-    assertThat(secondVersion.getStatus()).isEqualTo("ACTIVE");
-    assertThat(secondVersion.getUpdatedAt()).isNotNull();
-    assertThat(secondVersion.getUpdatedBy()).isEqualTo("system");
+    assertThat(secondVersion.getRevisionInstant()).isNotNull();
+    assertThat(secondVersion.getRevisionType()).isEqualTo(IndividualAudit.RevisionTypeEnum.MOD);
   }
 
   @Test
@@ -177,9 +192,9 @@ class IndividualAuditControllerTest {
     // Создаем физическое лицо
     final IndividualCreate individualCreate = new IndividualCreate()
         .userId(userId)
-        .passportNumber("9876 543210")
-        .phoneNumber("+7 (999) 123-45-67")
-        .email("petr@example.com");
+        .passportNumber(PASSPORT_NUMBER_2)
+        .phoneNumber(PHONE_NUMBER_1)
+        .email(EMAIL_3);
 
     // Сохраняем физическое лицо
     final MvcResult createResult = mockMvc.perform(post("/api/v1/individuals")
@@ -196,36 +211,57 @@ class IndividualAuditControllerTest {
     // Изменяем физическое лицо
     final IndividualCreate updateRequest = new IndividualCreate()
         .userId(userId)
-        .passportNumber("9876 543210")
-        .phoneNumber("+7 (999) 999-99-99")
-        .email("petr.petrov@example.com");
+        .passportNumber(PASSPORT_NUMBER_2)
+        .phoneNumber(PHONE_NUMBER_2)
+        .email(EMAIL_4);
 
     mockMvc.perform(put("/api/v1/individuals/{id}", individualId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
 
-    // Получаем конкретную ревизию (первую версию)
-    final MvcResult revisionResult = mockMvc.perform(
-            get("/api/v1/audit/individuals/{id}/revision/4", individualId))
+    // Получаем список всех ревизий
+    final MvcResult historyResult = mockMvc.perform(
+            get("/api/v1/audit/individuals/{id}/history", individualId))
         .andExpect(status().isOk())
         .andReturn();
 
-    final IndividualAuditDTO revision = objectMapper.readValue(
+    final List<IndividualAudit> history = objectMapper.readValue(
+        historyResult.getResponse().getContentAsString(),
+        new TypeReference<>() {
+        }
+    );
+
+    assertThat(history).isNotEmpty();
+    System.out.println("История ревизий:");
+    history.forEach(audit -> System.out.println("Ревизия #" + audit.getRevisionNumber() +
+        ", тип: " + audit.getRevisionType() +
+        ", время: " + audit.getRevisionInstant()));
+
+    final Integer firstRevisionNumber = history.get(0).getRevisionNumber();
+    System.out.println("Запрашиваем ревизию #" + firstRevisionNumber);
+
+    // Получаем конкретную ревизию (первую версию)
+    final MvcResult revisionResult = mockMvc.perform(
+            get("/api/v1/audit/individuals/{id}/revision/{rev}", individualId, firstRevisionNumber))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    System.out.println("Ответ сервера при запросе ревизии:");
+    System.out.println(revisionResult.getResponse().getContentAsString());
+
+    final IndividualAudit revision = objectMapper.readValue(
         revisionResult.getResponse().getContentAsString(),
-        IndividualAuditDTO.class
+        IndividualAudit.class
     );
 
     // Проверяем, что получили правильную версию
-    assertThat(revision.getPassportNumber()).isEqualTo("9876 543210");
-    assertThat(revision.getPhoneNumber()).isEqualTo("+7 (999) 123-45-67");
-    assertThat(revision.getEmail()).isEqualTo("petr@example.com");
+    assertThat(revision.getPassportNumber()).isEqualTo(PASSPORT_NUMBER_2);
+    assertThat(revision.getPhoneNumber()).isEqualTo(PHONE_NUMBER_1);
+    assertThat(revision.getEmail()).isEqualTo(EMAIL_3);
     assertThat(revision.getUserId()).isEqualTo(userId);
-    assertThat(revision.getFirstName()).isEqualTo("Ivan");
-    assertThat(revision.getLastName()).isEqualTo("Ivanov");
-    assertThat(revision.getStatus()).isEqualTo("ACTIVE");
-    assertThat(revision.getCreatedAt()).isNotNull();
-    assertThat(revision.getCreatedBy()).isEqualTo("system");
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(IndividualAudit.RevisionTypeEnum.ADD);
   }
 
   @Test
@@ -233,9 +269,9 @@ class IndividualAuditControllerTest {
     // Создаем физическое лицо
     final IndividualCreate individualCreate = new IndividualCreate()
         .userId(userId)
-        .passportNumber("5555 555555")
-        .phoneNumber("+7 (999) 123-45-67")
-        .email("alex@example.com");
+        .passportNumber(PASSPORT_NUMBER_3)
+        .phoneNumber(PHONE_NUMBER_1)
+        .email(EMAIL_5);
 
     // Сохраняем физическое лицо
     final MvcResult createResult = mockMvc.perform(post("/api/v1/individuals")

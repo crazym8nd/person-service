@@ -8,7 +8,6 @@ plugins {
 
 group = 'com.bnm'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '17'
 
 java {
     toolchain {
@@ -75,25 +74,40 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs += [
+                    "$buildDir/generated/src/main/java"
+            ]
+        }
+    }
+}
+
+compileJava {
+    dependsOn tasks.openApiGenerate
+}
+
 openApiGenerate {
     generatorName = "spring"
     inputSpec = "$rootDir/openapi.yaml"
     outputDir = "$buildDir/generated"
     apiPackage = "com.bnm.personservice.api"
     modelPackage = "com.bnm.personservice.model"
-    invokerPackage = "com.bnm.personservice.invoker"
     configOptions = [
-            interfaceOnly             : "true",
-            useTags                   : "true",
-            dateLibrary               : "java8",
-            java8                     : "true",
-            library                   : "spring-boot",
-            useJakartaEe              : "true",
-            useBeanValidation         : "true",
-            generateApiTests          : "true",
-            generateModelTests        : "true",
-            generateApiDocumentation  : "true",
-            generateModelDocumentation: "true"
+            interfaceOnly       : "true",
+            useTags             : "true",
+            useSpringBoot3      : "true",
+            sourceFolder        : "src/main/java",
+            skipDefaultInterface: "true",
+            dateLibrary         : "java8",
+            java8               : "true"
+    ]
+    typeMappings = [
+            instant: "java.time.Instant"
+    ]
+    importMappings = [
+            "Instant": "java.time.Instant"
     ]
 }
 
@@ -114,22 +128,6 @@ task generateJavaClient(type: org.openapitools.generator.gradle.plugin.tasks.Gen
             generateApiDocumentation  : "true",
             generateModelDocumentation: "true"
     ]
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs += [
-                    "$buildDir/generated/src/main/java",
-                    "$buildDir/generated/java-client/src/main/java"
-            ]
-        }
-    }
-}
-
-compileJava {
-    dependsOn tasks.openApiGenerate
-    dependsOn generateJavaClient
 }
 
 task generateJavaClientJar(type: Jar) {
@@ -163,4 +161,8 @@ publishing {
     repositories {
         mavenLocal()
     }
+}
+
+clean {
+    delete "$buildDir/generated"
 }

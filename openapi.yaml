@@ -8,9 +8,17 @@ servers:
   - url: http://localhost:8080
     description: Local development server
 
+tags:
+  - name: person
+    description: Операции с основными сущностями
+  - name: audit
+    description: Операции аудита
+
 paths:
   /api/v1/countries:
     get:
+      tags:
+        - person
       summary: Получить список стран
       operationId: getCountries
       responses:
@@ -38,6 +46,8 @@ paths:
                   created: "2024-01-01T00:00:00Z"
                   updated: "2024-01-01T00:00:00Z"
     post:
+      tags:
+        - person
       summary: Создать новую страну
       operationId: createCountry
       requestBody:
@@ -69,6 +79,8 @@ paths:
 
   /api/v1/countries/{id}:
     get:
+      tags:
+        - person
       summary: Получить страну по ID
       operationId: getCountryById
       parameters:
@@ -85,6 +97,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Country'
     put:
+      tags:
+        - person
       summary: Обновить страну
       operationId: updateCountry
       parameters:
@@ -107,6 +121,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Country'
     delete:
+      tags:
+        - person
       summary: Удалить страну
       operationId: deleteCountry
       parameters:
@@ -121,6 +137,8 @@ paths:
 
   /api/v1/addresses:
     get:
+      tags:
+        - person
       summary: Получить список адресов
       operationId: getAddresses
       responses:
@@ -143,6 +161,8 @@ paths:
                   updated: "2024-01-01T00:00:00Z"
                   archived: null
     post:
+      tags:
+        - person
       summary: Создать новый адрес
       operationId: createAddress
       requestBody:
@@ -176,6 +196,8 @@ paths:
 
   /api/v1/addresses/{id}:
     get:
+      tags:
+        - person
       summary: Получить адрес по ID
       operationId: getAddressById
       parameters:
@@ -193,6 +215,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Address'
     put:
+      tags:
+        - person
       summary: Обновить адрес
       operationId: updateAddress
       parameters:
@@ -216,6 +240,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Address'
     delete:
+      tags:
+        - person
       summary: Удалить адрес
       operationId: deleteAddress
       parameters:
@@ -231,6 +257,8 @@ paths:
 
   /api/v1/users:
     get:
+      tags:
+        - person
       summary: Получить список пользователей
       operationId: getUsers
       responses:
@@ -253,6 +281,8 @@ paths:
                   updated: "2024-01-01T00:00:00Z"
                   address_id: "550e8400-e29b-41d4-a716-446655440001"
     post:
+      tags:
+        - person
       summary: Создать нового пользователя
       operationId: createUser
       requestBody:
@@ -286,6 +316,8 @@ paths:
 
   /api/v1/users/{id}:
     get:
+      tags:
+        - person
       summary: Получить пользователя по ID
       operationId: getUserById
       parameters:
@@ -303,6 +335,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
     patch:
+      tags:
+        - person
       summary: Обновить статус верификации пользователя
       operationId: updateUserVerificationStatus
       parameters:
@@ -329,6 +363,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
     put:
+      tags:
+        - person
       summary: Обновить пользователя
       operationId: updateUser
       parameters:
@@ -352,6 +388,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
     delete:
+      tags:
+        - person
       summary: Удалить пользователя
       operationId: deleteUser
       parameters:
@@ -367,6 +405,8 @@ paths:
 
   /api/v1/individuals:
     get:
+      tags:
+        - person
       summary: Получить список физических лиц
       operationId: getIndividuals
       responses:
@@ -387,6 +427,8 @@ paths:
                   created: "2024-01-01T00:00:00Z"
                   updated: "2024-01-01T00:00:00Z"
     post:
+      tags:
+        - person
       summary: Создать новое физическое лицо
       operationId: createIndividual
       requestBody:
@@ -418,6 +460,8 @@ paths:
 
   /api/v1/individuals/{id}:
     get:
+      tags:
+        - person
       summary: Получить физическое лицо по ID
       operationId: getIndividualById
       parameters:
@@ -435,6 +479,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Individual'
     put:
+      tags:
+        - person
       summary: Обновить физическое лицо
       operationId: updateIndividual
       parameters:
@@ -458,6 +504,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Individual'
     delete:
+      tags:
+        - person
       summary: Удалить физическое лицо
       operationId: deleteIndividual
       parameters:
@@ -470,6 +518,218 @@ paths:
       responses:
         '204':
           description: Физическое лицо успешно удалено
+
+  /api/v1/audit/users/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений пользователя
+      operationId: getUserHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/users/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию пользователя
+      operationId: getUserRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/individuals/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений физического лица
+      operationId: getIndividualHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndividualAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/individuals/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию физического лица
+      operationId: getIndividualRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndividualAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/countries/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений страны
+      operationId: getCountryHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/countries/{id}/revisions/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию страны
+      operationId: getCountryRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/addresses/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений адреса
+      operationId: getAddressHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/addresses/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию адреса
+      operationId: getAddressRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressAudit'
+        '404':
+          description: Ревизия не найдена
 
 components:
   schemas:
@@ -685,4 +945,129 @@ components:
           maxLength: 32
         email:
           type: string
-          maxLength: 32 
+          maxLength: 32
+
+    UserAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          maxLength: 32
+        lastName:
+          type: string
+          maxLength: 32
+        status:
+          type: string
+          maxLength: 64
+        verifiedAt:
+          type: string
+          format: date-time
+          x-field-type: instant
+        archivedAt:
+          type: string
+          format: date-time
+          x-field-type: instant
+        addressId:
+          type: string
+          format: uuid
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+          x-field-type: instant
+
+    IndividualAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        passport_number:
+          type: string
+          maxLength: 32
+        phone_number:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          maxLength: 32
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+
+    CountryAudit:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          maxLength: 32
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          maxLength: 64
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+
+    AddressAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        countryId:
+          type: integer
+          format: int64
+        address:
+          type: string
+          maxLength: 128
+        zipCode:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 32
+        state:
+          type: string
+          maxLength: 32
+        archived:
+          type: string
+          format: date-time
+          x-field-type: instant
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+          x-field-type: instant 

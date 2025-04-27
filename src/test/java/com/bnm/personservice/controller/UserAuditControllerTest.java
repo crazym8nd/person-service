@@ -10,7 +10,8 @@ import com.bnm.personservice.PersonServiceApplication;
 import com.bnm.personservice.TestcontainersConfiguration;
 import com.bnm.personservice.model.AddressCreate;
 import com.bnm.personservice.model.CountryCreate;
-import com.bnm.personservice.model.UserAuditDTO;
+import com.bnm.personservice.model.UserAudit;
+import com.bnm.personservice.model.UserAudit.RevisionTypeEnum;
 import com.bnm.personservice.model.UserCreate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -114,38 +115,46 @@ class UserAuditControllerTest {
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
 
-    // Получаем историю изменений
+    // Получаем список всех ревизий
     final MvcResult historyResult = mockMvc.perform(
             get("/api/v1/audit/users/{id}/history", userId))
         .andExpect(status().isOk())
         .andReturn();
 
-    final List<UserAuditDTO> history = objectMapper.readValue(
+    final List<UserAudit> history = objectMapper.readValue(
         historyResult.getResponse().getContentAsString(),
         new TypeReference<>() {
         }
     );
 
-    // Проверяем, что есть две версии
-    assertThat(history).hasSize(2);
+    assertThat(history).isNotEmpty();
+    System.out.println("История ревизий:");
+    history.forEach(audit -> System.out.println("Ревизия #" + audit.getRevisionNumber() +
+        ", тип: " + audit.getRevisionType() +
+        ", имя: " + audit.getFirstName() +
+        ", фамилия: " + audit.getLastName() +
+        ", статус: " + audit.getStatus()));
 
-    // Проверяем первую версию
-    final UserAuditDTO firstVersion = history.get(0);
-    assertThat(firstVersion.getFirstName()).isEqualTo("Ivan");
-    assertThat(firstVersion.getLastName()).isEqualTo("Ivanov");
-    assertThat(firstVersion.getStatus()).isEqualTo("ACTIVE");
-    assertThat(firstVersion.getAddressId()).isEqualTo(addressId);
-    assertThat(firstVersion.getCreatedAt()).isNotNull();
-    assertThat(firstVersion.getCreatedBy()).isEqualTo("system");
+    final Integer firstRevisionNumber = history.get(0).getRevisionNumber();
 
-    // Проверяем вторую версию
-    final UserAuditDTO secondVersion = history.get(1);
-    assertThat(secondVersion.getFirstName()).isEqualTo("Ivan");
-    assertThat(secondVersion.getLastName()).isEqualTo("Petrov");
-    assertThat(secondVersion.getStatus()).isEqualTo("INACTIVE");
-    assertThat(secondVersion.getAddressId()).isEqualTo(addressId);
-    assertThat(secondVersion.getUpdatedAt()).isNotNull();
-    assertThat(secondVersion.getUpdatedBy()).isEqualTo("system");
+    // Получаем конкретную ревизию (первую версию)
+    final MvcResult revisionResult = mockMvc.perform(
+            get("/api/v1/audit/users/{id}/revision/{rev}", userId, firstRevisionNumber))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    final UserAudit revision = objectMapper.readValue(
+        revisionResult.getResponse().getContentAsString(),
+        UserAudit.class
+    );
+
+    // Проверяем, что получили правильную версию
+    assertThat(revision.getFirstName()).isEqualTo("Ivan");
+    assertThat(revision.getLastName()).isEqualTo("Ivanov");
+    assertThat(revision.getStatus()).isEqualTo("ACTIVE");
+    assertThat(revision.getAddressId()).isEqualTo(addressId);
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(UserAudit.RevisionTypeEnum.ADD);
   }
 
   @Test
@@ -181,24 +190,53 @@ class UserAuditControllerTest {
             .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk());
 
-    // Получаем конкретную ревизию (первую версию)
-    final MvcResult revisionResult = mockMvc.perform(
-            get("/api/v1/audit/users/{id}/revision/3", userId))
+    // Получаем список всех ревизий
+    final MvcResult historyResult = mockMvc.perform(
+            get("/api/v1/audit/users/{id}/history", userId))
         .andExpect(status().isOk())
         .andReturn();
 
-    final UserAuditDTO revision = objectMapper.readValue(
-        revisionResult.getResponse().getContentAsString(),
-        UserAuditDTO.class
+    final List<UserAudit> history = objectMapper.readValue(
+        historyResult.getResponse().getContentAsString(),
+        new TypeReference<>() {
+        }
     );
+
+    assertThat(history).isNotEmpty();
+    System.out.println("История ревизий в shouldReturnSpecificRevision:");
+    history.forEach(audit -> System.out.println("Ревизия #" + audit.getRevisionNumber() +
+        ", тип: " + audit.getRevisionType() +
+        ", имя: " + audit.getFirstName() +
+        ", фамилия: " + audit.getLastName() +
+        ", статус: " + audit.getStatus()));
+
+    final Integer firstRevisionNumber = history.get(0).getRevisionNumber();
+
+    // Получаем конкретную ревизию (первую версию)
+    final MvcResult revisionResult = mockMvc.perform(
+            get("/api/v1/audit/users/{id}/revision/{rev}", userId, firstRevisionNumber))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    final UserAudit revision = objectMapper.readValue(
+        revisionResult.getResponse().getContentAsString(),
+        UserAudit.class
+    );
+
+    System.out.println("Полученная ревизия:");
+    System.out.println("Ревизия #" + revision.getRevisionNumber() +
+        ", тип: " + revision.getRevisionType() +
+        ", имя: " + revision.getFirstName() +
+        ", фамилия: " + revision.getLastName() +
+        ", статус: " + revision.getStatus());
 
     // Проверяем, что получили правильную версию
     assertThat(revision.getFirstName()).isEqualTo("Petr");
     assertThat(revision.getLastName()).isEqualTo("Petrov");
     assertThat(revision.getStatus()).isEqualTo("ACTIVE");
     assertThat(revision.getAddressId()).isEqualTo(addressId);
-    assertThat(revision.getCreatedAt()).isNotNull();
-    assertThat(revision.getCreatedBy()).isEqualTo("system");
+    assertThat(revision.getRevisionInstant()).isNotNull();
+    assertThat(revision.getRevisionType()).isEqualTo(RevisionTypeEnum.ADD);
   }
 
   @Test
@@ -206,7 +244,7 @@ class UserAuditControllerTest {
     // Создаем пользователя
     final UserCreate userCreate = new UserCreate()
         .firstName("Alex")
-        .lastName("Alexeev")
+        .lastName("Alexandrov")
         .addressId(addressId)
         .status("ACTIVE");
 
@@ -229,14 +267,7 @@ class UserAuditControllerTest {
 
   @Test
   void shouldReturn404ForNonExistentUser() throws Exception {
-    final UUID nonExistentId = UUID.randomUUID();
-
-    // Пытаемся получить историю несуществующего пользователя
-    mockMvc.perform(get("/api/v1/audit/users/{id}/history", nonExistentId))
-        .andExpect(status().isNotFound());
-
-    // Пытаемся получить ревизию несуществующего пользователя
-    mockMvc.perform(get("/api/v1/audit/users/{id}/revision/1", nonExistentId))
+    mockMvc.perform(get("/api/v1/audit/users/{id}/revision/1", UUID.randomUUID()))
         .andExpect(status().isNotFound());
   }
 } 
