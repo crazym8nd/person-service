@@ -2,17 +2,39 @@ openapi: 3.0.0
 info:
   title: Person Service API
   version: 1.0.0
-  description: API для работы с пользователями и их данными
+  description: |
+    # Сервис управления данными пользователей
+    
+    Этот API предоставляет возможности для:
+    - Управления данными пользователей (создание, обновление, удаление)
+    - Управления адресами и странами
+    - Работы с физическими лицами
+    - Аудита изменений всех сущностей
+    
+    ## Основные сущности
+    - Users (Пользователи)
+    - Individuals (Физические лица)
+    - Addresses (Адреса)
+    - Countries (Страны)
+    
+    ## Статусы
+    - ACTIVE - Активный
+    - VERIFIED - Верифицированный
+    - DELETED - Удаленный
+    
+    ## Аудит
+    Все изменения сущностей отслеживаются в системе аудита.
+    Доступна история изменений и просмотр конкретных ревизий.
 
 servers:
   - url: http://localhost:8080
-    description: Local development server
+    description: Локальный сервер разработки
 
 tags:
   - name: person
-    description: Операции с основными сущностями
+    description: Операции с основными сущностями системы- Пользователи, Физические лица, Адреса, Страны
   - name: audit
-    description: Операции аудита
+    description: Операции аудита-История изменений сущностей, Просмотр конкретных ревизий, Отслеживание изменений
 
 paths:
   /api/v1/countries:
@@ -20,10 +42,15 @@ paths:
       tags:
         - person
       summary: Получить список стран
+      description: |
+        Возвращает список всех доступных стран в системе.
+        Страны отсортированы по названию в алфавитном порядке.
       operationId: getCountries
       responses:
         '200':
-          description: Успешное получение списка стран
+          description: |
+            Успешное получение списка стран.
+            Возвращает массив объектов Country.
           content:
             application/json:
               schema:
@@ -32,23 +59,29 @@ paths:
                   $ref: '#/components/schemas/Country'
               example:
                 - id: 1
-                  name: "Россия"
+                  name: "Российская Федерация"
                   alpha2: "RU"
                   alpha3: "RUS"
                   status: "ACTIVE"
                   created: "2024-01-01T00:00:00Z"
                   updated: "2024-01-01T00:00:00Z"
                 - id: 2
-                  name: "США"
+                  name: "Соединенные Штаты Америки"
                   alpha2: "US"
                   alpha3: "USA"
                   status: "ACTIVE"
                   created: "2024-01-01T00:00:00Z"
                   updated: "2024-01-01T00:00:00Z"
+        '500':
+          description: Внутренняя ошибка сервера
     post:
       tags:
         - person
       summary: Создать новую страну
+      description: |
+        Создает новую страну в системе.
+        Все поля являются обязательными.
+        Alpha2 и Alpha3 коды должны быть уникальными.
       operationId: createCountry
       requestBody:
         required: true
@@ -63,7 +96,9 @@ paths:
               status: "ACTIVE"
       responses:
         '201':
-          description: Страна успешно создана
+          description: |
+            Страна успешно создана.
+            Возвращает созданный объект Country с присвоенным ID.
           content:
             application/json:
               schema:
@@ -76,6 +111,12 @@ paths:
                 status: "ACTIVE"
                 created: "2024-01-01T00:00:00Z"
                 updated: "2024-01-01T00:00:00Z"
+        '400':
+          description: Некорректные данные запроса
+        '409':
+          description: Конфликт (страна с таким кодом уже существует)
+        '500':
+          description: Внутренняя ошибка сервера
 
   /api/v1/countries/{id}:
     get:
@@ -260,10 +301,15 @@ paths:
       tags:
         - person
       summary: Получить список пользователей
+      description: |
+        Возвращает список всех пользователей в системе.
+        Пользователи отсортированы по дате создания (сначала новые).
       operationId: getUsers
       responses:
         '200':
-          description: Успешное получение списка пользователей
+          description: |
+            Успешное получение списка пользователей.
+            Возвращает массив объектов User.
           content:
             application/json:
               schema:
@@ -280,10 +326,19 @@ paths:
                   created: "2024-01-01T00:00:00Z"
                   updated: "2024-01-01T00:00:00Z"
                   address_id: "550e8400-e29b-41d4-a716-446655440001"
+        '500':
+          description: Внутренняя ошибка сервера
     post:
       tags:
         - person
       summary: Создать нового пользователя
+      description: |
+        Создает нового пользователя в системе.
+        Обязательные поля:
+        - first_name
+        - last_name
+        - status
+        - address_id (должен существовать в системе)
       operationId: createUser
       requestBody:
         required: true
@@ -298,21 +353,19 @@ paths:
               address_id: "550e8400-e29b-41d4-a716-446655440001"
       responses:
         '201':
-          description: Пользователь успешно создан
+          description: |
+            Пользователь успешно создан.
+            Возвращает созданный объект User с присвоенным ID.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-              example:
-                id: "550e8400-e29b-41d4-a716-446655440000"
-                first_name: "Иван"
-                last_name: "Иванов"
-                status: "ACTIVE"
-                verified_at: "2024-01-01T00:00:00Z"
-                archived_at: null
-                created: "2024-01-01T00:00:00Z"
-                updated: "2024-01-01T00:00:00Z"
-                address_id: "550e8400-e29b-41d4-a716-446655440001"
+        '400':
+          description: Некорректные данные запроса
+        '404':
+          description: Указанный address_id не найден
+        '500':
+          description: Внутренняя ошибка сервера
 
   /api/v1/users/{id}:
     get:
@@ -735,28 +788,43 @@ components:
   schemas:
     Country:
       type: object
+      description: |
+        Страна с основными идентификаторами.
+        - alpha2 и alpha3 - коды стран по ISO 3166
+        - status - текущий статус страны в системе (ACTIVE, DELETED)
       properties:
         id:
           type: integer
           format: int64
+          description: Уникальный идентификатор страны
         name:
           type: string
           maxLength: 32
+          description: Полное название страны
+          example: "Российская Федерация"
         alpha2:
           type: string
           maxLength: 2
+          description: Двухбуквенный код страны по ISO 3166
+          example: "RU"
         alpha3:
           type: string
           maxLength: 3
+          description: Трехбуквенный код страны по ISO 3166
+          example: "RUS"
         status:
           type: string
           maxLength: 32
+          description: Статус страны в системе (например, ACTIVE, DELETED)
+          example: "ACTIVE"
         created:
           type: string
           format: date-time
+          description: Дата и время создания записи
         updated:
           type: string
           format: date-time
+          description: Дата и время последнего обновления
 
     CountryCreate:
       type: object
@@ -781,35 +849,51 @@ components:
 
     Address:
       type: object
+      description: |
+        Адрес пользователя.
+        Содержит полную информацию о местоположении.
       properties:
         id:
           type: string
           format: uuid
+          description: Уникальный идентификатор адреса
         country_id:
           type: integer
           format: int64
+          description: Идентификатор страны
         address:
           type: string
           maxLength: 128
+          description: Полный адрес (улица, дом, квартира)
+          example: "ул. Ленина, д. 1, кв. 123"
         zip_code:
           type: string
           maxLength: 32
+          description: Почтовый индекс
+          example: "123456"
         city:
           type: string
           maxLength: 32
+          description: Город
+          example: "Москва"
         state:
           type: string
           maxLength: 32
+          description: Регион/область/край
+          example: "Московская область"
         created:
           type: string
           format: date-time
+          description: Дата и время создания записи
         updated:
           type: string
           format: date-time
+          description: Дата и время последнего обновления
         archived:
           type: string
           format: date-time
           nullable: true
+          description: Дата и время архивации адреса (null если активен)
 
     AddressCreate:
       type: object
@@ -837,35 +921,50 @@ components:
 
     User:
       type: object
+      description: |
+        Основная сущность пользователя.
+        Содержит базовую информацию и статус верификации.
       properties:
         id:
           type: string
           format: uuid
+          description: Уникальный идентификатор пользователя
         first_name:
           type: string
           maxLength: 32
+          description: Имя пользователя
+          example: "Иван"
         last_name:
           type: string
           maxLength: 32
+          description: Фамилия пользователя
+          example: "Иванов"
         status:
           type: string
           maxLength: 64
+          description: Текущий статус пользователя (например, ACTIVE, VERIFIED, DELETED)
+          example: "ACTIVE"
         verified_at:
           type: string
           format: date-time
+          description: Дата и время верификации пользователя
         archived_at:
           type: string
           format: date-time
           nullable: true
+          description: Дата и время архивации (null если активен)
         created:
           type: string
           format: date-time
+          description: Дата и время создания записи
         updated:
           type: string
           format: date-time
+          description: Дата и время последнего обновления
         address_id:
           type: string
           format: uuid
+          description: Идентификатор основного адреса пользователя
 
     UserCreate:
       type: object
