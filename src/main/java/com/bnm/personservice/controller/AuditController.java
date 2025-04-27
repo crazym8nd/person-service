@@ -25,7 +25,11 @@ public class AuditController {
 
   @GetMapping("/users/{id}/history")
   public ResponseEntity<List<UserAuditDTO>> getUserHistory(@PathVariable final UUID id) {
-    return ResponseEntity.ok(auditService.getUserRevisions(id));
+    final List<UserAuditDTO> history = auditService.getUserRevisions(id);
+    if (history.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(history);
   }
 
   @GetMapping("/users/{id}/revision/{rev}")
@@ -41,7 +45,11 @@ public class AuditController {
   @GetMapping("/individuals/{id}/history")
   public ResponseEntity<List<IndividualAuditDTO>> getIndividualHistory(
       @PathVariable final UUID id) {
-    return ResponseEntity.ok(auditService.getIndividualRevisions(id));
+    final List<IndividualAuditDTO> history = auditService.getIndividualRevisions(id);
+    if (history.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(history);
   }
 
   @GetMapping("/individuals/{id}/revision/{rev}")
@@ -57,6 +65,9 @@ public class AuditController {
   @GetMapping("/countries/{id}/history")
   public ResponseEntity<List<CountryAuditDTO>> getCountryHistory(@PathVariable final Long id) {
     final List<CountryAuditDTO> history = auditService.getCountryRevisions(id);
+    if (history.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
     return ResponseEntity.ok(history);
   }
 
@@ -72,6 +83,9 @@ public class AuditController {
   public ResponseEntity<List<AddressAuditDTO>> getAddressHistory(@PathVariable final UUID id) {
     final List<AddressAuditDTO> history = auditService.getAddressRevisions(id);
     log.debug("Retrieved {} revisions for address {}", history.size(), id);
+    if (history.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
     return ResponseEntity.ok(history);
   }
 
