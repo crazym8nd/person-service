@@ -5,10 +5,10 @@ import com.bnm.personservice.entity.Country;
 import com.bnm.personservice.entity.Individual;
 import com.bnm.personservice.entity.RevInfoEntity;
 import com.bnm.personservice.entity.User;
-import com.bnm.personservice.mapper.AddressAuditMapper;
-import com.bnm.personservice.mapper.CountryAuditMapper;
-import com.bnm.personservice.mapper.IndividualAuditMapper;
-import com.bnm.personservice.mapper.UserAuditMapper;
+import com.bnm.personservice.mapper.AddressMapper;
+import com.bnm.personservice.mapper.CountryMapper;
+import com.bnm.personservice.mapper.IndividualMapper;
+import com.bnm.personservice.mapper.UserMapper;
 import com.bnm.personservice.model.AddressAudit;
 import com.bnm.personservice.model.CountryAudit;
 import com.bnm.personservice.model.IndividualAudit;
@@ -33,10 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuditService {
 
   private final EntityManager entityManager;
-  private final AddressAuditMapper addressAuditMapper;
-  private final UserAuditMapper userAuditMapper;
-  private final IndividualAuditMapper individualAuditMapper;
-  private final CountryAuditMapper countryAuditMapper;
+  private final AddressMapper addressMapper;
+  private final UserMapper userMapper;
+  private final IndividualMapper individualMapper;
+  private final CountryMapper countryMapper;
 
   @Transactional(readOnly = true)
   public List<IndividualAudit> getIndividualRevisions(final UUID id) {
@@ -57,7 +57,7 @@ public class AuditService {
           final RevInfoEntity revEntity = (RevInfoEntity) revisionEntity[1];
           final Instant revisionInstant = revEntity != null ?
               revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
-          final IndividualAudit dto = individualAuditMapper.toDto(individual, rev, revisionType,
+          final IndividualAudit dto = individualMapper.toAuditDto(individual, rev, revisionType,
               revisionInstant);
           log.debug("Mapped revision {} for individual {}: {}", rev, id, dto);
           return dto;
@@ -98,7 +98,7 @@ public class AuditService {
       return null;
     }
 
-    final IndividualAudit dto = individualAuditMapper.toDto(individual, revision, revisionType,
+    final IndividualAudit dto = individualMapper.toAuditDto(individual, revision, revisionType,
         revisionInstant);
     log.debug("Mapped revision {} for individual {}: {}", revision, id, dto);
     return dto;
@@ -123,7 +123,7 @@ public class AuditService {
           final RevInfoEntity revEntity = (RevInfoEntity) revisionEntity[1];
           final Instant revisionInstant = revEntity != null ?
               revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
-          final UserAudit dto = userAuditMapper.toDto(user, rev, revisionType, revisionInstant);
+          final UserAudit dto = userMapper.toAuditDto(user, rev, revisionType, revisionInstant);
           log.debug("Mapped revision {} for user {}: {}", rev, id, dto);
           return dto;
         })
@@ -163,7 +163,7 @@ public class AuditService {
       return null;
     }
 
-    final UserAudit dto = userAuditMapper.toDto(user, revision, revisionType, revisionInstant);
+    final UserAudit dto = userMapper.toAuditDto(user, revision, revisionType, revisionInstant);
     log.debug("Mapped revision {} for user {}: {}", revision, id, dto);
     return dto;
   }
@@ -187,7 +187,7 @@ public class AuditService {
           final RevInfoEntity revEntity = (RevInfoEntity) revisionEntity[1];
           final Instant revisionInstant = revEntity != null ?
               revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
-          final AddressAudit dto = addressAuditMapper.toDto(address, rev, revisionType,
+          final AddressAudit dto = addressMapper.toAuditDto(address, rev, revisionType,
               revisionInstant);
           log.debug("Mapped revision {} for address {}: {}", rev, id, dto);
           return dto;
@@ -228,7 +228,7 @@ public class AuditService {
       return null;
     }
 
-    final AddressAudit dto = addressAuditMapper.toDto(address, revision, revisionType,
+    final AddressAudit dto = addressMapper.toAuditDto(address, revision, revisionType,
         revisionInstant);
     log.debug("Mapped revision {} for address {}: {}", revision, id, dto);
     return dto;
@@ -253,7 +253,7 @@ public class AuditService {
           final RevInfoEntity revEntity = (RevInfoEntity) revisionEntity[1];
           final Instant revisionInstant = revEntity != null ?
               revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
-          final CountryAudit dto = countryAuditMapper.toDto(country, rev, revisionType,
+          final CountryAudit dto = countryMapper.toAuditDto(country, rev, revisionType,
               revisionInstant);
           log.debug("Mapped revision {} for country {}: {}", rev, id, dto);
           return dto;
@@ -294,7 +294,7 @@ public class AuditService {
       return null;
     }
 
-    final CountryAudit dto = countryAuditMapper.toDto(country, revision, revisionType,
+    final CountryAudit dto = countryMapper.toAuditDto(country, revision, revisionType,
         revisionInstant);
     log.debug("Mapped revision {} for country {}: {}", revision, id, dto);
     return dto;
