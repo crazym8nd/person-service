@@ -39,32 +39,6 @@ public class AuditService {
   private final CountryAuditMapper countryAuditMapper;
 
   @Transactional(readOnly = true)
-  public <T> List<T> getRevisions(final Class<T> type, final Object id) {
-    if (type.equals(Address.class)) {
-      return (List<T>) getAddressRevisions((UUID) id);
-    }
-
-    final AuditReader auditReader = AuditReaderFactory.get(entityManager);
-    final List<Number> revisions = auditReader.getRevisions(type, id);
-    log.debug("Found {} revisions for entity {} with id {}", revisions.size(), type.getSimpleName(),
-        id);
-
-    return revisions.stream()
-        .map(rev -> auditReader.find(type, id, rev))
-        .toList();
-  }
-
-  @Transactional(readOnly = true)
-  public <T> T getRevision(final Class<T> type, final Object id, final int revision) {
-    if (type.equals(Address.class)) {
-      return (T) getAddressRevision((UUID) id, revision);
-    }
-
-    final AuditReader auditReader = AuditReaderFactory.get(entityManager);
-    return auditReader.find(type, id, revision);
-  }
-
-  @Transactional(readOnly = true)
   public List<IndividualAudit> getIndividualRevisions(final UUID id) {
     final AuditReader auditReader = AuditReaderFactory.get(entityManager);
     final List<Number> revisions = auditReader.getRevisions(Individual.class, id);

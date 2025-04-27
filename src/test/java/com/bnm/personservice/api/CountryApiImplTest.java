@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class PersonControllerTest {
+class CountryApiImplTest {
 
   @Autowired
   private MockMvc mockMvc;
