@@ -1,9 +1,9 @@
 package com.bnm.personservice.controller;
 
 import com.bnm.personservice.entity.Country;
-import com.bnm.personservice.entity.Individual;
-import com.bnm.personservice.entity.User;
 import com.bnm.personservice.model.AddressAuditDTO;
+import com.bnm.personservice.model.IndividualAuditDTO;
+import com.bnm.personservice.model.UserAuditDTO;
 import com.bnm.personservice.service.AuditService;
 import java.util.List;
 import java.util.UUID;
@@ -24,24 +24,34 @@ public class AuditController {
   private final AuditService auditService;
 
   @GetMapping("/users/{id}/history")
-  public ResponseEntity<List<User>> getUserHistory(@PathVariable final UUID id) {
-    return ResponseEntity.ok(auditService.getRevisions(User.class, id));
+  public ResponseEntity<List<UserAuditDTO>> getUserHistory(@PathVariable final UUID id) {
+    return ResponseEntity.ok(auditService.getUserRevisions(id));
   }
 
   @GetMapping("/users/{id}/revision/{rev}")
-  public ResponseEntity<User> getUserRevision(@PathVariable final UUID id, @PathVariable final int rev) {
-    return ResponseEntity.ok(auditService.getRevision(User.class, id, rev));
+  public ResponseEntity<UserAuditDTO> getUserRevision(@PathVariable final UUID id,
+      @PathVariable final int rev) {
+    final UserAuditDTO revision = auditService.getUserRevision(id, rev);
+    if (revision == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(revision);
   }
 
   @GetMapping("/individuals/{id}/history")
-  public ResponseEntity<List<Individual>> getIndividualHistory(@PathVariable final UUID id) {
-    return ResponseEntity.ok(auditService.getRevisions(Individual.class, id));
+  public ResponseEntity<List<IndividualAuditDTO>> getIndividualHistory(
+      @PathVariable final UUID id) {
+    return ResponseEntity.ok(auditService.getIndividualRevisions(id));
   }
 
   @GetMapping("/individuals/{id}/revision/{rev}")
-  public ResponseEntity<Individual> getIndividualRevision(@PathVariable final UUID id,
+  public ResponseEntity<IndividualAuditDTO> getIndividualRevision(@PathVariable final UUID id,
       @PathVariable final int rev) {
-    return ResponseEntity.ok(auditService.getRevision(Individual.class, id, rev));
+    final IndividualAuditDTO revision = auditService.getIndividualRevision(id, rev);
+    if (revision == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(revision);
   }
 
   @GetMapping("/countries/{id}/history")
@@ -50,13 +60,14 @@ public class AuditController {
   }
 
   @GetMapping("/countries/{id}/revision/{rev}")
-  public ResponseEntity<Country> getCountryRevision(@PathVariable final Long id, @PathVariable final int rev) {
+  public ResponseEntity<Country> getCountryRevision(@PathVariable final Long id,
+      @PathVariable final int rev) {
     return ResponseEntity.ok(auditService.getRevision(Country.class, id, rev));
   }
 
   @GetMapping("/addresses/{id}/history")
   public ResponseEntity<List<AddressAuditDTO>> getAddressHistory(@PathVariable final UUID id) {
-    List<AddressAuditDTO> history = auditService.getAddressRevisions(id);
+    final List<AddressAuditDTO> history = auditService.getAddressRevisions(id);
     log.debug("Retrieved {} revisions for address {}", history.size(), id);
     return ResponseEntity.ok(history);
   }
@@ -65,12 +76,13 @@ public class AuditController {
   public ResponseEntity<AddressAuditDTO> getAddressRevision(
       @PathVariable final UUID id,
       @PathVariable final int rev) {
-    AddressAuditDTO revision = auditService.getAddressRevision(id, rev);
+    log.info("Получение ревизии {} для адреса {}", rev, id);
+    final AddressAuditDTO revision = auditService.getAddressRevision(id, rev);
     if (revision == null) {
-        log.warn("Revision {} not found for address {}", rev, id);
-        return ResponseEntity.notFound().build();
+      log.warn("Ревизия {} не найдена для адреса {}", rev, id);
+      return ResponseEntity.notFound().build();
     }
-    log.debug("Retrieved revision {} for address {}: {}", rev, id, revision);
+    log.info("Успешно получена ревизия {} для адреса {}: {}", rev, id, revision);
     return ResponseEntity.ok(revision);
   }
 }
