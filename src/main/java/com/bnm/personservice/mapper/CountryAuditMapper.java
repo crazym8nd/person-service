@@ -3,32 +3,40 @@ package com.bnm.personservice.mapper;
 import com.bnm.personservice.entity.Country;
 import com.bnm.personservice.model.CountryAudit;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.hibernate.envers.RevisionType;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class CountryAuditMapper {
+@Mapper(componentModel = "spring")
+public interface CountryAuditMapper {
 
-  public CountryAudit toDto(final Country entity, final Number revisionNumber,
-      final RevisionType revisionType, final Instant revisionInstant) {
-    if (entity == null) {
-      return null;
-    }
+  @Mapping(source = "entity.id", target = "id")
+  @Mapping(source = "entity.name", target = "name")
+  @Mapping(source = "entity.alpha2", target = "alpha2")
+  @Mapping(source = "entity.alpha3", target = "alpha3")
+  @Mapping(source = "entity.status", target = "status")
+  @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
+  @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
+  @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
+  CountryAudit toDto(Country entity, Number revisionNumber, RevisionType revisionType,
+      Instant revisionInstant);
 
-    final CountryAudit dto = new CountryAudit();
-    dto.setId(entity.getId());
-    dto.setName(entity.getName());
-    dto.setAlpha2(entity.getAlpha2());
-    dto.setAlpha3(entity.getAlpha3());
-    dto.setStatus(entity.getStatus());
+  @Named("numberToInteger")
+  default Integer numberToInteger(final Number number) {
+    return number != null ? number.intValue() : null;
+  }
 
-    // Добавляем информацию об аудите
-    dto.setRevisionNumber(revisionNumber.intValue());
-    dto.setRevisionType(CountryAudit.RevisionTypeEnum.fromValue(revisionType.name()));
-    dto.setRevisionInstant(
-        revisionInstant != null ? revisionInstant.atOffset(ZoneOffset.UTC) : null);
+  @Named("mapRevisionType")
+  default CountryAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+    return revisionType != null ? CountryAudit.RevisionTypeEnum.fromValue(revisionType.name())
+        : null;
+  }
 
-    return dto;
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
+    return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 } 
