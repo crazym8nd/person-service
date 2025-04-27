@@ -6,37 +6,39 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.hibernate.envers.RevisionType;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class UserAuditMapper {
+@Mapper(componentModel = "spring")
+public interface UserAuditMapper {
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
-    return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
+  @Mapping(source = "entity.id", target = "id")
+  @Mapping(source = "entity.firstName", target = "firstName")
+  @Mapping(source = "entity.lastName", target = "lastName")
+  @Mapping(source = "entity.status", target = "status")
+  @Mapping(source = "entity.verifiedAt", target = "verifiedAt", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "entity.archivedAt", target = "archivedAt", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "entity.address.id", target = "addressId")
+  @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
+  @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
+  @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
+  UserAudit toDto(User entity, Number revisionNumber, RevisionType revisionType,
+      Instant revisionInstant);
+
+  @Named("numberToInteger")
+  default Integer numberToInteger(final Number number) {
+    return number != null ? number.intValue() : null;
   }
 
-  public UserAudit toDto(final User entity, final Number revisionNumber,
-      final RevisionType revisionType, final Instant revisionInstant) {
-    if (entity == null) {
-      return null;
-    }
+  @Named("mapRevisionType")
+  default UserAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+    return revisionType != null ? UserAudit.RevisionTypeEnum.fromValue(revisionType.name())
+        : null;
+  }
 
-    final UserAudit dto = new UserAudit();
-    dto.setId(entity.getId());
-    dto.setFirstName(entity.getFirstName());
-    dto.setLastName(entity.getLastName());
-    dto.setStatus(entity.getStatus());
-    dto.setVerifiedAt(convertToOffsetDateTime(entity.getVerifiedAt()));
-    dto.setArchivedAt(convertToOffsetDateTime(entity.getArchivedAt()));
-    if (entity.getAddress() != null) {
-      dto.setAddressId(entity.getAddress().getId());
-    }
-
-    // Добавляем информацию об аудите
-    dto.setRevisionNumber(revisionNumber.intValue());
-    dto.setRevisionType(UserAudit.RevisionTypeEnum.fromValue(revisionType.name()));
-    dto.setRevisionInstant(convertToOffsetDateTime(revisionInstant));
-
-    return dto;
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
+    return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 } 

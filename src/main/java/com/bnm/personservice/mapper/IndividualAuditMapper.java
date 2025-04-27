@@ -6,35 +6,37 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import org.hibernate.envers.RevisionType;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class IndividualAuditMapper {
+@Mapper(componentModel = "spring")
+public interface IndividualAuditMapper {
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
-    return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
+  @Mapping(source = "entity.id", target = "id")
+  @Mapping(source = "entity.user.id", target = "userId")
+  @Mapping(source = "entity.passportNumber", target = "passportNumber")
+  @Mapping(source = "entity.phoneNumber", target = "phoneNumber")
+  @Mapping(source = "entity.email", target = "email")
+  @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
+  @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
+  @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
+  IndividualAudit toDto(Individual entity, Number revisionNumber, RevisionType revisionType,
+      Instant revisionInstant);
+
+  @Named("numberToInteger")
+  default Integer numberToInteger(final Number number) {
+    return number != null ? number.intValue() : null;
   }
 
-  public IndividualAudit toDto(final Individual entity, final Number revisionNumber,
-      final RevisionType revisionType, final Instant revisionInstant) {
-    if (entity == null) {
-      return null;
-    }
+  @Named("mapRevisionType")
+  default IndividualAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+    return revisionType != null ? IndividualAudit.RevisionTypeEnum.fromValue(revisionType.name())
+        : null;
+  }
 
-    final IndividualAudit dto = new IndividualAudit();
-    dto.setId(entity.getId());
-    if (entity.getUser() != null) {
-      dto.setUserId(entity.getUser().getId());
-    }
-    dto.setPassportNumber(entity.getPassportNumber());
-    dto.setPhoneNumber(entity.getPhoneNumber());
-    dto.setEmail(entity.getEmail());
-
-    // Добавляем информацию об аудите
-    dto.setRevisionNumber(revisionNumber.intValue());
-    dto.setRevisionType(IndividualAudit.RevisionTypeEnum.fromValue(revisionType.name()));
-    dto.setRevisionInstant(convertToOffsetDateTime(revisionInstant));
-
-    return dto;
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
+    return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 } 

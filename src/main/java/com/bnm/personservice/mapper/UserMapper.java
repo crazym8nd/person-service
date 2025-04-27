@@ -6,37 +6,38 @@ import com.bnm.personservice.model.UserCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-  public User toDto(final com.bnm.personservice.entity.User entity) {
-    final User dto = new User();
-    dto.setId(entity.getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
-    dto.setFirstName(entity.getFirstName());
-    dto.setLastName(entity.getLastName());
-    dto.setStatus(entity.getStatus());
-    dto.setVerifiedAt(convertToOffsetDateTime(entity.getVerifiedAt()));
-    dto.setArchivedAt(convertToOffsetDateTime(entity.getArchivedAt()));
-    if (entity.getAddress() != null) {
-      dto.setAddressId(entity.getAddress().getId());
-    }
-    return dto;
-  }
+  @Mapping(source = "id", target = "id")
+  @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "firstName", target = "firstName")
+  @Mapping(source = "lastName", target = "lastName")
+  @Mapping(source = "status", target = "status")
+  @Mapping(source = "verifiedAt", target = "verifiedAt", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "archivedAt", target = "archivedAt", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "address.id", target = "addressId")
+  User toDto(com.bnm.personservice.entity.User entity);
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
     return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 
-  public com.bnm.personservice.entity.User toEntity(final UserCreate dto, final Address address) {
-    final com.bnm.personservice.entity.User entity = new com.bnm.personservice.entity.User();
-    entity.setFirstName(dto.getFirstName());
-    entity.setLastName(dto.getLastName());
-    entity.setStatus(dto.getStatus());
-    entity.setAddress(address);
-    return entity;
-  }
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "verifiedAt", ignore = true)
+  @Mapping(target = "archivedAt", ignore = true)
+  @Mapping(target = "individual", ignore = true)
+  @Mapping(target = "secretKey", ignore = true)
+  @Mapping(source = "address", target = "address")
+  com.bnm.personservice.entity.User toEntity(UserCreate dto, Address address);
 } 

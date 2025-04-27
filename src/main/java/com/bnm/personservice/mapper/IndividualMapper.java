@@ -6,34 +6,32 @@ import com.bnm.personservice.model.IndividualCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class IndividualMapper {
+@Mapper(componentModel = "spring")
+public interface IndividualMapper {
 
-  public Individual toDto(final com.bnm.personservice.entity.Individual entity) {
-    final Individual dto = new Individual();
-    dto.setId(entity.getId());
-    dto.setUserId(entity.getUser().getId());
-    dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
-    dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
-    dto.setPassportNumber(entity.getPassportNumber());
-    dto.setPhoneNumber(entity.getPhoneNumber());
-    dto.setEmail(entity.getEmail());
-    return dto;
-  }
+  @Mapping(source = "id", target = "id")
+  @Mapping(source = "user.id", target = "userId")
+  @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
+  @Mapping(source = "passportNumber", target = "passportNumber")
+  @Mapping(source = "phoneNumber", target = "phoneNumber")
+  @Mapping(source = "email", target = "email")
+  Individual toDto(com.bnm.personservice.entity.Individual entity);
 
-  private OffsetDateTime convertToOffsetDateTime(final Instant instant) {
+  @Named("instantToOffsetDateTime")
+  default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
     return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
   }
 
-  public com.bnm.personservice.entity.Individual toEntity(final IndividualCreate dto,
-      final User user) {
-    final com.bnm.personservice.entity.Individual entity = new com.bnm.personservice.entity.Individual();
-    entity.setPassportNumber(dto.getPassportNumber());
-    entity.setPhoneNumber(dto.getPhoneNumber());
-    entity.setEmail(dto.getEmail());
-    entity.setUser(user);
-    return entity;
-  }
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(source = "user", target = "user")
+  com.bnm.personservice.entity.Individual toEntity(IndividualCreate dto, User user);
 } 
