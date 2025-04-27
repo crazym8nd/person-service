@@ -28,7 +28,6 @@ public class UserService {
 
   @Transactional
   public User create(final User user) {
-    user.setArchivedAt(Instant.now());
     return userRepository.save(user);
   }
 

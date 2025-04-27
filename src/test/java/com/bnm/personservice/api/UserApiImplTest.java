@@ -120,6 +120,7 @@ class UserApiImplTest {
     assertThat(createdUser.getStatus()).isEqualTo(userCreate.getStatus());
     assertThat(createdUser.getAddressId()).isEqualTo(address.getId());
     assertThat(createdUser.getVerifiedAt()).isNull();
+    assertThat(createdUser.getArchivedAt()).isNull();
     assertThat(createdUser.getCreated()).isNotNull()
         .isBefore(OffsetDateTime.now());
     assertThat(createdUser.getUpdated()).isNotNull()
