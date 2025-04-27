@@ -6,7 +6,6 @@ import com.bnm.personservice.model.UserCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +20,7 @@ public class UserMapper {
     dto.setLastName(entity.getLastName());
     dto.setStatus(entity.getStatus());
     dto.setVerifiedAt(convertToOffsetDateTime(entity.getVerifiedAt()));
-    dto.setArchivedAt(JsonNullable.of(convertToOffsetDateTime(entity.getArchivedAt())));
+    dto.setArchivedAt(convertToOffsetDateTime(entity.getArchivedAt()));
     if (entity.getAddress() != null) {
       dto.setAddressId(entity.getAddress().getId());
     }

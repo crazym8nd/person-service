@@ -6,7 +6,6 @@ import com.bnm.personservice.model.AddressCreate;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,12 +16,14 @@ public class AddressMapper {
     dto.setId(entity.getId());
     dto.setCreated(convertToOffsetDateTime(entity.getCreatedAt()));
     dto.setUpdated(convertToOffsetDateTime(entity.getUpdatedAt()));
-    dto.setCountryId(entity.getCountry().getId());
     dto.setAddress(entity.getAddress());
     dto.setZipCode(entity.getZipCode());
-    dto.setArchived(JsonNullable.of(convertToOffsetDateTime(entity.getArchived())));
     dto.setCity(entity.getCity());
     dto.setState(entity.getState());
+    dto.setArchived(convertToOffsetDateTime(entity.getArchived()));
+    if (entity.getCountry() != null) {
+      dto.setCountryId(entity.getCountry().getId());
+    }
     return dto;
   }
 
@@ -33,12 +34,11 @@ public class AddressMapper {
   public com.bnm.personservice.entity.Address toEntity(final AddressCreate dto,
       final Country country) {
     final com.bnm.personservice.entity.Address entity = new com.bnm.personservice.entity.Address();
-    entity.setCountry(country);
     entity.setAddress(dto.getAddress());
     entity.setZipCode(dto.getZipCode());
     entity.setCity(dto.getCity());
     entity.setState(dto.getState());
-    entity.setArchived(Instant.now());
+    entity.setCountry(country);
     return entity;
   }
 } 

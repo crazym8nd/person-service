@@ -107,7 +107,9 @@ openApiGenerate {
             useSpringController : "true",
             implicitHeaders     : "true",
             useLombok           : "true",
-            generateOperationBody: "true"
+            generateOperationBody: "true",
+            disallowAdditionalPropertiesIfNotPresent: "true",
+            openApiNullable     : "false"
     ]
     typeMappings = [
             instant: "java.time.Instant"
