@@ -829,15 +829,15 @@ components:
           type: integer
           format: int64
           example: 1
-        revisionNumber:
+        revision_number:
           type: integer
           format: int32
           description: "Номер ревизии"
-        revisionType:
+        revision_type:
           type: string
           description: "Тип изменения (ADD, MOD, DEL)"
           enum: [ "ADD", "MOD", "DEL" ]
-        revisionInstant:
+        revision_instant:
           type: string
           format: date-time
           description: "Временная метка ревизии"
@@ -874,14 +874,14 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        countryId:
+        country_id:
           type: integer
           format: int64
           example: 1
         address:
           type: string
           example: "ул. Ленина, д. 1"
-        zipCode:
+        zip_code:
           type: string
           example: "123456"
         city:
@@ -903,15 +903,15 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        revisionNumber:
+        revision_number:
           type: integer
           format: int32
           description: "Номер ревизии"
-        revisionType:
+        revision_type:
           type: string
           description: "Тип изменения (ADD, MOD, DEL)"
           enum: [ "ADD", "MOD", "DEL" ]
-        revisionInstant:
+        revision_instant:
           type: string
           format: date-time
           description: "Временная метка ревизии"
@@ -944,26 +944,26 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        firstName:
+        first_name:
           type: string
           example: "Иван"
-        lastName:
+        last_name:
           type: string
           example: "Иванов"
         status:
           type: string
           example: "ACTIVE"
-        verifiedAt:
+        verified_at:
           type: string
           format: date-time
           nullable: true
           example: "2024-01-01T00:00:00Z"
-        archivedAt:
+        archived_at:
           type: string
           format: date-time
           nullable: true
           example: "2024-01-01T00:00:00Z"
-        addressId:
+        address_id:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
@@ -975,15 +975,15 @@ components:
           type: string
           format: uuid
           example: "550e84_uuid"
-        revisionNumber:
+        revision_number:
           type: integer
           format: int32
           description: "Номер ревизии"
-        revisionType:
+        revision_type:
           type: string
           description: "Тип изменения (ADD, MOD, DEL)"
           enum: [ "ADD", "MOD", "DEL" ]
-        revisionInstant:
+        revision_instant:
           type: string
           format: date-time
           description: "Временная метка ревизии"
@@ -1008,14 +1008,14 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        userId:
+        user_id:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        passportNumber:
+        passport_number:
           type: string
           example: "1234 567890"
-        phoneNumber:
+        phone_number:
           type: string
           example: "+79991234567"
         email:
@@ -1029,19 +1029,19 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        userId:
+        user_id:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
-        revisionNumber:
+        revision_number:
           type: integer
           format: int32
           description: "Номер ревизии"
-        revisionType:
+        revision_type:
           type: string
           description: "Тип изменения (ADD, MOD, DEL)"
           enum: [ "ADD", "MOD", "DEL" ]
-        revisionInstant:
+        revision_instant:
           type: string
           format: date-time
           description: "Временная метка ревизии"
