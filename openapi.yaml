@@ -1049,18 +1049,18 @@ components:
     IndividualRequest:
       type: object
       required:
-        - userId
-        - passportNumber
-        - phoneNumber
+        - user_id
+        - passport_number
+        - phone_number
         - email
       properties:
-        userId:
+        user_id:
           type: string
           format: uuid
-        passportNumber:
+        passport_number:
           type: string
           maxLength: 32
-        phoneNumber:
+        phone_number:
           type: string
           maxLength: 32
         email:
