@@ -33,6 +33,12 @@ public interface AddressApiMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "domain.id", target = "id")
+    @Mapping(source = "domain.country.id", target = "countryId")
+    @Mapping(source = "domain.address", target = "address")
+    @Mapping(source = "domain.zipCode", target = "zipCode")
+    @Mapping(source = "domain.city", target = "city")
+    @Mapping(source = "domain.state", target = "state")
+    @Mapping(source = "domain.archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")

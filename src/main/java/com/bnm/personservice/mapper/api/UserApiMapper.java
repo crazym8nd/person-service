@@ -37,6 +37,12 @@ public interface UserApiMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "domain.id", target = "id")
+    @Mapping(source = "domain.firstName", target = "firstName")
+    @Mapping(source = "domain.lastName", target = "lastName")
+    @Mapping(source = "domain.status", target = "status")
+    @Mapping(source = "domain.verifiedAt", target = "verifiedAt", qualifiedByName = "instantToOffsetDateTime")
+    @Mapping(source = "domain.archivedAt", target = "archivedAt", qualifiedByName = "instantToOffsetDateTime")
+    @Mapping(source = "domain.address.id", target = "addressId")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")

@@ -829,6 +829,18 @@ components:
           type: integer
           format: int64
           example: 1
+        name:
+          type: string
+          example: "Российская Федерация"
+        alpha2:
+          type: string
+          example: "RU"
+        alpha3:
+          type: string
+          example: "RUS"
+        status:
+          type: string
+          example: "ACTIVE"
         revision_number:
           type: integer
           format: int32
@@ -903,6 +915,27 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
+        country_id:
+          type: integer
+          format: int64
+          example: 1
+        address:
+          type: string
+          example: "ул. Ленина, д. 1"
+        zip_code:
+          type: string
+          example: "123456"
+        city:
+          type: string
+          example: "Москва"
+        state:
+          type: string
+          example: "Московская область"
+        archived:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-01T00:00:00Z"
         revision_number:
           type: integer
           format: int32
@@ -974,7 +1007,30 @@ components:
         id:
           type: string
           format: uuid
-          example: "550e84_uuid"
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        first_name:
+          type: string
+          example: "Иван"
+        last_name:
+          type: string
+          example: "Иванов"
+        status:
+          type: string
+          example: "ACTIVE"
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-01T00:00:00Z"
+        archived_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-01T00:00:00Z"
+        address_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
         revision_number:
           type: integer
           format: int32
@@ -1033,6 +1089,15 @@ components:
           type: string
           format: uuid
           example: "550e8400-e29b-41d4-a716-446655440000"
+        passport_number:
+          type: string
+          example: "1234 567890"
+        phone_number:
+          type: string
+          example: "+79991234567"
+        email:
+          type: string
+          example: "user@example.com"
         revision_number:
           type: integer
           format: int32

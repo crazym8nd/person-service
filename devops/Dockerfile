@@ -1,7 +1,19 @@
 # Этап сборки
 FROM gradle:8.5-jdk21 AS builder
 WORKDIR /app
-COPY . .
+
+# Копируем файлы конфигурации Gradle для лучшего использования кэша
+COPY build.gradle settings.gradle gradle.properties ./
+COPY gradle ./gradle
+COPY gradlew ./
+
+# Копируем openapi.yaml для генерации API классов
+COPY openapi.yaml ./
+
+# Копируем исходный код
+COPY src ./src
+
+# Собираем приложение
 RUN gradle build -x test
 
 # Этап выполнения

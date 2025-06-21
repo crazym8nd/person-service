@@ -28,6 +28,10 @@ public interface CountryApiMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "domain.id", target = "id")
+    @Mapping(source = "domain.name", target = "name")
+    @Mapping(source = "domain.alpha2", target = "alpha2")
+    @Mapping(source = "domain.alpha3", target = "alpha3")
+    @Mapping(source = "domain.status", target = "status")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
