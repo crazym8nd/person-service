@@ -1,12 +1,9 @@
 package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.model.UserAuditResponse;
 import com.bnm.personservice.model.UserRequest;
 import com.bnm.personservice.model.UserResponse;
 import com.bnm.personservice.service.domain.Address;
 import com.bnm.personservice.service.domain.User;
-import org.hibernate.envers.RevisionType;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -34,24 +31,6 @@ public interface UserApiMapper {
     @Mapping(target = "secretKey", ignore = true)
     @Mapping(source = "address", target = "address")
     User toDomain(UserRequest request, Address address);
-
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(source = "domain.id", target = "id")
-    @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
-    @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
-    @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    UserAuditResponse toAuditResponse(User domain, Number revisionNumber,
-                                      RevisionType revisionType, Instant revisionInstant);
-
-    @Named("numberToInteger")
-    default Integer numberToInteger(final Number number) {
-        return number != null ? number.intValue() : null;
-    }
-
-    @Named("mapRevisionType")
-    default UserAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? UserAuditResponse.RevisionTypeEnum.fromValue(revisionType.name()) : null;
-    }
 
     @Named("instantToOffsetDateTime")
     default OffsetDateTime instantToOffsetDateTime(final Instant instant) {

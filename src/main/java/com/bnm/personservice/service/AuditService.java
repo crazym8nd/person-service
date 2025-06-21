@@ -1,9 +1,9 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.mapper.api.AddressApiMapper;
-import com.bnm.personservice.mapper.api.CountryApiMapper;
-import com.bnm.personservice.mapper.api.IndividualApiMapper;
-import com.bnm.personservice.mapper.api.UserApiMapper;
+import com.bnm.personservice.mapper.api.AddressAuditApiMapper;
+import com.bnm.personservice.mapper.api.CountryAuditApiMapper;
+import com.bnm.personservice.mapper.api.IndividualAuditApiMapper;
+import com.bnm.personservice.mapper.api.UserAuditApiMapper;
 import com.bnm.personservice.mapper.persistence.AddressPersistenceMapper;
 import com.bnm.personservice.mapper.persistence.CountryPersistenceMapper;
 import com.bnm.personservice.mapper.persistence.IndividualPersistenceMapper;
@@ -34,10 +34,10 @@ import java.util.UUID;
 public class AuditService {
 
     private final EntityManager entityManager;
-    private final AddressApiMapper addressApiMapper;
-    private final UserApiMapper userApiMapper;
-    private final IndividualApiMapper individualApiMapper;
-    private final CountryApiMapper countryApiMapper;
+    private final AddressAuditApiMapper addressAuditApiMapper;
+    private final UserAuditApiMapper userAuditApiMapper;
+    private final IndividualAuditApiMapper individualAuditApiMapper;
+    private final CountryAuditApiMapper countryAuditApiMapper;
     private final AddressPersistenceMapper addressPersistenceMapper;
     private final UserPersistenceMapper userPersistenceMapper;
     private final IndividualPersistenceMapper individualPersistenceMapper;
@@ -64,7 +64,7 @@ public class AuditService {
                             revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
                     final var domain = individualPersistenceMapper.toDomain(individualEntity);
                     final var userDomain = userPersistenceMapper.toDomain(individualEntity.getUser());
-                    final IndividualAuditResponse dto = individualApiMapper.toAuditResponse(domain, userDomain, rev, revisionType,
+                    final IndividualAuditResponse dto = individualAuditApiMapper.toAuditResponse(domain, userDomain, rev, revisionType,
                             revisionInstant);
                     log.debug("Mapped revision {} for individual {}: {}", rev, id, dto);
                     return dto;
@@ -107,7 +107,7 @@ public class AuditService {
 
         final var domain = individualPersistenceMapper.toDomain(individual);
         final var userDomain = userPersistenceMapper.toDomain(individual.getUser());
-        final IndividualAuditResponse dto = individualApiMapper.toAuditResponse(domain, userDomain, revision, revisionType,
+        final IndividualAuditResponse dto = individualAuditApiMapper.toAuditResponse(domain, userDomain, revision, revisionType,
                 revisionInstant);
         log.debug("Mapped revision {} for individual {}: {}", revision, id, dto);
         return dto;
@@ -133,7 +133,7 @@ public class AuditService {
                     final Instant revisionInstant = revEntity != null ?
                             revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
                     final var domain = userPersistenceMapper.toDomain(user);
-                    final UserAuditResponse dto = userApiMapper.toAuditResponse(domain, rev, revisionType, revisionInstant);
+                    final UserAuditResponse dto = userAuditApiMapper.toAuditResponse(domain, rev, revisionType, revisionInstant);
                     log.debug("Mapped revision {} for user {}: {}", rev, id, dto);
                     return dto;
                 })
@@ -174,7 +174,7 @@ public class AuditService {
         }
 
         final var domain = userPersistenceMapper.toDomain(user);
-        final UserAuditResponse dto = userApiMapper.toAuditResponse(domain, revision, revisionType, revisionInstant);
+        final UserAuditResponse dto = userAuditApiMapper.toAuditResponse(domain, revision, revisionType, revisionInstant);
         log.debug("Mapped revision {} for user {}: {}", revision, id, dto);
         return dto;
     }
@@ -199,7 +199,7 @@ public class AuditService {
                     final Instant revisionInstant = revEntity != null ?
                             revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
                     final var domain = addressPersistenceMapper.toDomain(address);
-                    final AddressAuditResponse dto = addressApiMapper.toAuditResponse(domain, rev, revisionType,
+                    final AddressAuditResponse dto = addressAuditApiMapper.toAuditResponse(domain, rev, revisionType,
                             revisionInstant);
                     log.debug("Mapped revision {} for address {}: {}", rev, id, dto);
                     return dto;
@@ -241,7 +241,7 @@ public class AuditService {
         }
 
         final var domain = addressPersistenceMapper.toDomain(address);
-        final AddressAuditResponse dto = addressApiMapper.toAuditResponse(domain, revision, revisionType,
+        final AddressAuditResponse dto = addressAuditApiMapper.toAuditResponse(domain, revision, revisionType,
                 revisionInstant);
         log.debug("Mapped revision {} for address {}: {}", revision, id, dto);
         return dto;
@@ -267,7 +267,7 @@ public class AuditService {
                     final Instant revisionInstant = revEntity != null ?
                             revEntity.getRevtstmp().toInstant(ZoneOffset.UTC) : null;
                     final var domain = countryPersistenceMapper.toDomain(country);
-                    final CountryAuditResponse dto = countryApiMapper.toAuditResponse(domain, rev, revisionType,
+                    final CountryAuditResponse dto = countryAuditApiMapper.toAuditResponse(domain, rev, revisionType,
                             revisionInstant);
                     log.debug("Mapped revision {} for country {}: {}", rev, id, dto);
                     return dto;
@@ -309,7 +309,7 @@ public class AuditService {
         }
 
         final var domain = countryPersistenceMapper.toDomain(country);
-        final CountryAuditResponse dto = countryApiMapper.toAuditResponse(domain, revision, revisionType,
+        final CountryAuditResponse dto = countryAuditApiMapper.toAuditResponse(domain, revision, revisionType,
                 revisionInstant);
         log.debug("Mapped revision {} for country {}: {}", revision, id, dto);
         return dto;

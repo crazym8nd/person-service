@@ -1,18 +1,10 @@
 package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.model.CountryAuditResponse;
 import com.bnm.personservice.model.CountryRequest;
 import com.bnm.personservice.model.CountryResponse;
 import com.bnm.personservice.service.domain.Country;
-import org.hibernate.envers.RevisionType;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 @Mapper(componentModel = "spring")
 public interface CountryApiMapper {
@@ -25,28 +17,4 @@ public interface CountryApiMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     Country toDomain(CountryRequest request);
-
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(source = "domain.id", target = "id")
-    @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
-    @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
-    @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    CountryAuditResponse toAuditResponse(Country domain, Number revisionNumber,
-                                         RevisionType revisionType, Instant revisionInstant);
-
-    @Named("numberToInteger")
-    default Integer numberToInteger(final Number number) {
-        return number != null ? number.intValue() : null;
-    }
-
-    @Named("mapRevisionType")
-    default CountryAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? CountryAuditResponse.RevisionTypeEnum.fromValue(revisionType.name())
-                : null;
-    }
-
-    @Named("instantToOffsetDateTime")
-    default OffsetDateTime instantToOffsetDateTime(final Instant instant) {
-        return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
-    }
 } 
