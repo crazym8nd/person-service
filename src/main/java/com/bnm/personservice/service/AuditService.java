@@ -1,6 +1,5 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.*;
 import com.bnm.personservice.mapper.api.AddressApiMapper;
 import com.bnm.personservice.mapper.api.CountryApiMapper;
 import com.bnm.personservice.mapper.api.IndividualApiMapper;
@@ -13,6 +12,7 @@ import com.bnm.personservice.model.AddressAuditResponse;
 import com.bnm.personservice.model.CountryAuditResponse;
 import com.bnm.personservice.model.IndividualAuditResponse;
 import com.bnm.personservice.model.UserAuditResponse;
+import com.bnm.personservice.repository.entity.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

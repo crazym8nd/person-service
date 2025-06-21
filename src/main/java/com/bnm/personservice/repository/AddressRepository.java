@@ -1,6 +1,6 @@
 package com.bnm.personservice.repository;
 
-import com.bnm.personservice.entity.AddressEntity;
+import com.bnm.personservice.repository.entity.AddressEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

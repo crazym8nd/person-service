@@ -1,9 +1,9 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.domain.Individual;
 import com.bnm.personservice.mapper.persistence.IndividualPersistenceMapper;
 import com.bnm.personservice.repository.IndividualRepository;
 import com.bnm.personservice.repository.UserRepository;
+import com.bnm.personservice.service.domain.Individual;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

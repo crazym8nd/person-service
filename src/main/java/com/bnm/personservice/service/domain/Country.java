@@ -1,19 +1,18 @@
-package com.bnm.personservice.domain;
+package com.bnm.personservice.service.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @EqualsAndHashCode
-public class Individual {
-    private UUID id;
-    private UUID userId;
-    private String passportNumber;
-    private String phoneNumber;
-    private String email;
+public class Country {
+    private Long id;
+    private String name;
+    private String alpha2;
+    private String alpha3;
+    private String status;
     private Instant createdAt;
     private String createdBy;
     private Instant updatedAt;

@@ -1,10 +1,10 @@
 package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.domain.Individual;
-import com.bnm.personservice.domain.User;
 import com.bnm.personservice.model.IndividualAuditResponse;
 import com.bnm.personservice.model.IndividualRequest;
 import com.bnm.personservice.model.IndividualResponse;
+import com.bnm.personservice.service.domain.Individual;
+import com.bnm.personservice.service.domain.User;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

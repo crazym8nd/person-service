@@ -1,10 +1,10 @@
 package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.domain.Address;
-import com.bnm.personservice.domain.Country;
 import com.bnm.personservice.model.AddressAuditResponse;
 import com.bnm.personservice.model.AddressRequest;
 import com.bnm.personservice.model.AddressResponse;
+import com.bnm.personservice.service.domain.Address;
+import com.bnm.personservice.service.domain.Country;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

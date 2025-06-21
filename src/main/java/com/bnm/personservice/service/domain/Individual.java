@@ -1,4 +1,4 @@
-package com.bnm.personservice.domain;
+package com.bnm.personservice.service.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,14 +8,12 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode
-public class Address {
+public class Individual {
     private UUID id;
-    private Country country;
-    private String address;
-    private String zipCode;
-    private Instant archived;
-    private String city;
-    private String state;
+    private UUID userId;
+    private String passportNumber;
+    private String phoneNumber;
+    private String email;
     private Instant createdAt;
     private String createdBy;
     private Instant updatedAt;

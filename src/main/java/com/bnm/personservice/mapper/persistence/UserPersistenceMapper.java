@@ -1,7 +1,7 @@
 package com.bnm.personservice.mapper.persistence;
 
-import com.bnm.personservice.domain.User;
-import com.bnm.personservice.entity.UserEntity;
+import com.bnm.personservice.repository.entity.UserEntity;
+import com.bnm.personservice.service.domain.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

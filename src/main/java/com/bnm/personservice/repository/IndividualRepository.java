@@ -1,6 +1,6 @@
 package com.bnm.personservice.repository;
 
-import com.bnm.personservice.entity.IndividualEntity;
+import com.bnm.personservice.repository.entity.IndividualEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

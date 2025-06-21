@@ -1,4 +1,4 @@
-package com.bnm.personservice.entity;
+package com.bnm.personservice.repository.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.envers.RevisionEntity;

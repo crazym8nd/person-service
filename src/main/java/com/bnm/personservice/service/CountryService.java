@@ -1,8 +1,8 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.domain.Country;
 import com.bnm.personservice.mapper.persistence.CountryPersistenceMapper;
 import com.bnm.personservice.repository.CountryRepository;
+import com.bnm.personservice.service.domain.Country;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.bnm.personservice.domain;
+package com.bnm.personservice.service.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
