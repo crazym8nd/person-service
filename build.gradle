@@ -1,35 +1,183 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.4'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+    id 'org.openapi.generator' version "${openApiGeneratorVersion}"
+    id 'maven-publish'
 }
 
 group = 'com.bnm'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.hibernate.orm:hibernate-envers'
+    implementation 'org.springframework.data:spring-data-envers'
+
+    // OpenAPI dependencies
+    implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
+    implementation "io.swagger.core.v3:swagger-annotations:${swaggerAnnotationsVersion}"
+    implementation "io.swagger.core.v3:swagger-models:${swaggerModelsVersion}"
+
+    // Validation dependencies
+    implementation "jakarta.validation:jakarta.validation-api:${jakartaValidationApiVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
+
+    // Servlet API
+    implementation "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
+
+    // Annotation API
+    implementation "jakarta.annotation:jakarta.annotation-api:${jakartaAnnotationApiVersion}"
+
+    // OpenAPI Generator
+//    implementation("org.openapitools:openapi-generator-gradle-plugin:${openApiGeneratorVersion}") {
+//        exclude group: 'org.slf4j', module: 'slf4j-simple'
+//    }
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Java client dependencies
+    implementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+    implementation "io.gsonfire:gson-fire:${gsonFireVersion}"
+    implementation "javax.ws.rs:javax.ws.rs-api:${javaxWsRsApiVersion}"
+    implementation "javax.annotation:javax.annotation-api:${javaxAnnotationApiVersion}"
+    implementation "com.squareup.okio:okio:${okioVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api:${jakartaWsRsApiVersion}"
+
+    // MapStruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
+
+//sourceSets {
+//    main {
+//        java {
+//            srcDirs += [
+//                    "$buildDir/generated/src/main/java"
+//            ]
+//        }
+//    }
+//}
+
+compileJava {
+//    dependsOn tasks.openApiGenerate
+}
+
+//openApiGenerate {
+//    generatorName = "spring"
+//    inputSpec = "$rootDir/openapi.yaml"
+//    outputDir = "$buildDir/generated"
+//    apiPackage = "com.bnm.personservice.api"
+//    modelPackage = "com.bnm.personservice.model"
+//    configOptions = [
+//            interfaceOnly                           : "true",
+//            useTags                                 : "true",
+//            useSpringBoot3                          : "true",
+//            sourceFolder                            : "src/main/java",
+//            skipDefaultInterface                    : "true",
+//            dateLibrary                             : "java8",
+//            java8                                   : "true",
+//            useBeanValidation                       : "true",
+//            useOptional                             : "true",
+//            useSpringController                     : "true",
+//            implicitHeaders                         : "true",
+//            useLombok                               : "true",
+//            generateOperationBody                   : "true",
+//            disallowAdditionalPropertiesIfNotPresent: "true",
+//            openApiNullable                         : "false"
+//    ]
+//    typeMappings = [
+//            instant: "java.time.Instant"
+//    ]
+//    importMappings = [
+//            "Instant": "java.time.Instant"
+//    ]
+//}
+//
+//task generateJavaClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+//    generatorName = "java"
+//    inputSpec = "$rootDir/openapi.yaml"
+//    outputDir = "$buildDir/generated/java-client"
+//    apiPackage = "com.bnm.personservice.client.api"
+//    modelPackage = "com.bnm.personservice.client.model"
+//    invokerPackage = "com.bnm.personservice.client.invoker"
+//    configOptions = [
+//            dateLibrary               : "java8",
+//            java8                     : "true",
+//            useJakartaEe              : "true",
+//            useBeanValidation         : "true",
+//            generateApiTests          : "true",
+//            generateModelTests        : "true",
+//            generateApiDocumentation  : "true",
+//            generateModelDocumentation: "true"
+//    ]
+//}
+//
+//task generateJavaClientJar(type: Jar) {
+//    dependsOn tasks.generateJavaClient, tasks.openApiGenerate
+//    from "$buildDir/generated/java-client/src/main/java"
+//    include 'com/bnm/personservice/client/**'
+//    archiveClassifier = 'java-client'
+//}
+//
+//task generateApiJar(type: Jar) {
+//    dependsOn tasks.openApiGenerate
+//    from sourceSets.main.output
+//    include 'com/bnm/personservice/api/**'
+//    include 'com/bnm/personservice/model/**'
+//    include 'com/bnm/personservice/invoker/**'
+//    archiveClassifier = 'api'
+//}
+//
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            from components.java
+//            groupId = 'com.bnm'
+//            artifactId = 'person-service'
+//            version = '1.0-SNAPSHOT'
+//
+//            artifact generateApiJar
+//            artifact generateJavaClientJar
+//        }
+//    }
+//    repositories {
+//        mavenLocal()
+//    }
+//}
+//
+//clean {
+//    delete "$buildDir/generated"
+//}
