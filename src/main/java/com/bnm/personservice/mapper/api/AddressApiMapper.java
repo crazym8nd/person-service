@@ -6,6 +6,7 @@ import com.bnm.personservice.model.AddressResponse;
 import com.bnm.personservice.service.domain.Address;
 import com.bnm.personservice.service.domain.Country;
 import org.hibernate.envers.RevisionType;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,8 +18,6 @@ import java.time.ZoneOffset;
 @Mapper(componentModel = "spring")
 public interface AddressApiMapper {
 
-    @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
-    @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "country.id", target = "countryId")
     AddressResponse toResponse(Address domain);
@@ -32,13 +31,8 @@ public interface AddressApiMapper {
     @Mapping(target = "country", source = "country")
     Address toDomain(AddressRequest request, Country country);
 
+    @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "domain.id", target = "id")
-    @Mapping(source = "domain.country.id", target = "countryId")
-    @Mapping(source = "domain.address", target = "address")
-    @Mapping(source = "domain.zipCode", target = "zipCode")
-    @Mapping(source = "domain.city", target = "city")
-    @Mapping(source = "domain.state", target = "state")
-    @Mapping(source = "domain.archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")

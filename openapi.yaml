@@ -597,24 +597,15 @@ paths:
         '404':
           description: История изменений не найдена
 
-  /api/v1/audit/users/{id}/revision/{rev}:
+  /api/v1/audit/users/{id}/revisions/{rev}:
     get:
       tags:
         - audit
-      summary: Получить конкретную ревизию пользователя
+      summary: Получить ревизию пользователя
       operationId: getUserRevision
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: rev
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/UuidParameter'
+        - $ref: '#/components/parameters/RevisionParameter'
       responses:
         '200':
           description: Успешное получение ревизии
@@ -650,24 +641,15 @@ paths:
         '404':
           description: История изменений не найдена
 
-  /api/v1/audit/individuals/{id}/revision/{rev}:
+  /api/v1/audit/individuals/{id}/revisions/{rev}:
     get:
       tags:
         - audit
-      summary: Получить конкретную ревизию физического лица
+      summary: Получить ревизию физического лица
       operationId: getIndividualRevision
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: rev
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/UuidParameter'
+        - $ref: '#/components/parameters/RevisionParameter'
       responses:
         '200':
           description: Успешное получение ревизии
@@ -678,11 +660,11 @@ paths:
         '404':
           description: Ревизия не найдена
 
-  /api/v1/audit/countries/{id}/history:
+  /api/v1/audit/countries/{id}:
     get:
       tags:
         - audit
-      summary: Получить историю изменений страны
+      summary: Получить историю изменений страны по ID
       operationId: getCountryHistory
       parameters:
         - name: id
@@ -690,10 +672,9 @@ paths:
           required: true
           schema:
             type: integer
-            format: int64
       responses:
         '200':
-          description: Успешное получение истории изменений
+          description: Успешное получение истории
           content:
             application/json:
               schema:
@@ -701,26 +682,17 @@ paths:
                 items:
                   $ref: '#/components/schemas/CountryAuditResponse'
         '404':
-          description: История изменений не найдена
+          description: Страна не найдена
 
   /api/v1/audit/countries/{id}/revisions/{rev}:
     get:
       tags:
         - audit
-      summary: Получить конкретную ревизию страны
+      summary: Получить ревизию страны
       operationId: getCountryRevision
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: rev
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/IdParameter'
+        - $ref: '#/components/parameters/RevisionParameter'
       responses:
         '200':
           description: Успешное получение ревизии
@@ -785,115 +757,90 @@ paths:
           description: Ревизия не найдена
 
 components:
+  parameters:
+    RevisionParameter:
+      name: rev
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    IdParameter:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    UuidParameter:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
   schemas:
-    CountryResponse:
+    CountryRequest:
       type: object
-      description: |
-        Страна с основными идентификаторами.
-        - alpha2 и alpha3 - коды стран по ISO 3166
-        - status - текущий статус страны в системе (ACTIVE, DELETED)
       properties:
-        id:
-          type: integer
-          format: int64
-          description: Уникальный идентификатор страны
         name:
           type: string
-          maxLength: 32
-          description: Полное название страны
           example: "Российская Федерация"
         alpha2:
           type: string
-          maxLength: 2
-          description: Двухбуквенный код страны по ISO 3166
           example: "RU"
         alpha3:
           type: string
-          maxLength: 3
-          description: Трехбуквенный код страны по ISO 3166
           example: "RUS"
         status:
           type: string
-          maxLength: 32
-          description: Статус страны в системе (например, ACTIVE, DELETED)
           example: "ACTIVE"
-        created:
-          type: string
-          format: date-time
-          description: Дата и время создания записи
-        updated:
-          type: string
-          format: date-time
-          description: Дата и время последнего обновления
-
-    CountryRequest:
-      type: object
       required:
         - name
         - alpha2
         - alpha3
         - status
-      properties:
-        name:
-          type: string
-          maxLength: 32
-        alpha2:
-          type: string
-          maxLength: 2
-        alpha3:
-          type: string
-          maxLength: 3
-        status:
-          type: string
-          maxLength: 32
 
-    AddressResponse:
+    CountryResponse:
       type: object
-      description: |
-        Адрес пользователя.
-        Содержит полную информацию о местоположении.
       properties:
         id:
-          type: string
-          format: uuid
-          description: Уникальный идентификатор адреса
-        country_id:
           type: integer
           format: int64
-          description: Идентификатор страны
-        address:
+          example: 1
+        name:
           type: string
-          maxLength: 128
-          description: Полный адрес (улица, дом, квартира)
-          example: "ул. Ленина, д. 1, кв. 123"
-        zip_code:
+          example: "Российская Федерация"
+        alpha2:
           type: string
-          maxLength: 32
-          description: Почтовый индекс
-          example: "123456"
-        city:
+          example: "RU"
+        alpha3:
           type: string
-          maxLength: 32
-          description: Город
-          example: "Москва"
-        state:
+          example: "RUS"
+        status:
           type: string
-          maxLength: 32
-          description: Регион/область/край
-          example: "Московская область"
-        created:
+          example: "ACTIVE"
+
+    CountryAuditResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        revisionNumber:
+          type: integer
+          format: int32
+          description: "Номер ревизии"
+        revisionType:
+          type: string
+          description: "Тип изменения (ADD, MOD, DEL)"
+          enum: [ "ADD", "MOD", "DEL" ]
+        revisionInstant:
           type: string
           format: date-time
-          description: Дата и время создания записи
-        updated:
-          type: string
-          format: date-time
-          description: Дата и время последнего обновления
-        archived:
-          type: string
-          format: date-time
-          nullable: true
-          description: Дата и время архивации адреса (null если активен)
+          description: "Временная метка ревизии"
 
     AddressRequest:
       type: object
@@ -902,6 +849,7 @@ components:
         - address
         - zip_code
         - city
+        - state
       properties:
         country_id:
           type: integer
@@ -919,52 +867,54 @@ components:
           type: string
           maxLength: 32
 
-    UserResponse:
+    AddressResponse:
       type: object
-      description: |
-        Основная сущность пользователя.
-        Содержит базовую информацию и статус верификации.
       properties:
         id:
           type: string
           format: uuid
-          description: Уникальный идентификатор пользователя
-        first_name:
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        countryId:
+          type: integer
+          format: int64
+          example: 1
+        address:
           type: string
-          maxLength: 32
-          description: Имя пользователя
-          example: "Иван"
-        last_name:
+          example: "ул. Ленина, д. 1"
+        zipCode:
           type: string
-          maxLength: 32
-          description: Фамилия пользователя
-          example: "Иванов"
-        status:
+          example: "123456"
+        city:
           type: string
-          maxLength: 64
-          description: Текущий статус пользователя (например, ACTIVE, VERIFIED, DELETED)
-          example: "ACTIVE"
-        verified_at:
+          example: "Москва"
+        state:
           type: string
-          format: date-time
-          description: Дата и время верификации пользователя
-        archived_at:
+          example: "Московская область"
+        archived:
           type: string
           format: date-time
           nullable: true
-          description: Дата и время архивации (null если активен)
-        created:
-          type: string
-          format: date-time
-          description: Дата и время создания записи
-        updated:
-          type: string
-          format: date-time
-          description: Дата и время последнего обновления
-        address_id:
+          example: "2024-01-01T00:00:00Z"
+
+    AddressAuditResponse:
+      type: object
+      properties:
+        id:
           type: string
           format: uuid
-          description: Идентификатор основного адреса пользователя
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        revisionNumber:
+          type: integer
+          format: int32
+          description: "Номер ревизии"
+        revisionType:
+          type: string
+          description: "Тип изменения (ADD, MOD, DEL)"
+          enum: [ "ADD", "MOD", "DEL" ]
+        revisionInstant:
+          type: string
+          format: date-time
+          description: "Временная метка ревизии"
 
     UserRequest:
       type: object
@@ -987,6 +937,57 @@ components:
           type: string
           format: uuid
 
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        firstName:
+          type: string
+          example: "Иван"
+        lastName:
+          type: string
+          example: "Иванов"
+        status:
+          type: string
+          example: "ACTIVE"
+        verifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-01T00:00:00Z"
+        archivedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-01T00:00:00Z"
+        addressId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    UserAuditResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e84_uuid"
+        revisionNumber:
+          type: integer
+          format: int32
+          description: "Номер ревизии"
+        revisionType:
+          type: string
+          description: "Тип изменения (ADD, MOD, DEL)"
+          enum: [ "ADD", "MOD", "DEL" ]
+        revisionInstant:
+          type: string
+          format: date-time
+          description: "Временная метка ревизии"
+
     UserVerificationRequest:
       type: object
       required:
@@ -1006,81 +1007,20 @@ components:
         id:
           type: string
           format: uuid
-        user_id:
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        userId:
           type: string
           format: uuid
-        passport_number:
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        passportNumber:
           type: string
-          maxLength: 32
-        phone_number:
+          example: "1234 567890"
+        phoneNumber:
           type: string
-          maxLength: 32
+          example: "+79991234567"
         email:
           type: string
-          maxLength: 32
-        created:
-          type: string
-          format: date-time
-        updated:
-          type: string
-          format: date-time
-
-    IndividualRequest:
-      type: object
-      required:
-        - user_id
-        - passport_number
-        - phone_number
-        - email
-      properties:
-        user_id:
-          type: string
-          format: uuid
-        passport_number:
-          type: string
-          maxLength: 32
-        phone_number:
-          type: string
-          maxLength: 32
-        email:
-          type: string
-          maxLength: 32
-
-    UserAuditResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        firstName:
-          type: string
-          maxLength: 32
-        lastName:
-          type: string
-          maxLength: 32
-        status:
-          type: string
-          maxLength: 64
-        verifiedAt:
-          type: string
-          format: date-time
-          x-field-type: instant
-        archivedAt:
-          type: string
-          format: date-time
-          x-field-type: instant
-        addressId:
-          type: string
-          format: uuid
-        revisionNumber:
-          type: integer
-        revisionType:
-          type: string
-          enum: [ ADD, MOD, DEL ]
-        revisionInstant:
-          type: string
-          format: date-time
-          x-field-type: instant
+          example: "user@example.com"
 
     IndividualAuditResponse:
       type: object
@@ -1088,85 +1028,57 @@ components:
         id:
           type: string
           format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
         userId:
           type: string
           format: uuid
-        passport_number:
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        revisionNumber:
+          type: integer
+          format: int32
+          description: "Номер ревизии"
+        revisionType:
+          type: string
+          description: "Тип изменения (ADD, MOD, DEL)"
+          enum: [ "ADD", "MOD", "DEL" ]
+        revisionInstant:
+          type: string
+          format: date-time
+          description: "Временная метка ревизии"
+
+    IndividualRequest:
+      type: object
+      required:
+        - userId
+        - passportNumber
+        - phoneNumber
+        - email
+      properties:
+        userId:
+          type: string
+          format: uuid
+        passportNumber:
           type: string
           maxLength: 32
-        phone_number:
+        phoneNumber:
           type: string
           maxLength: 32
         email:
           type: string
           maxLength: 32
-        revisionNumber:
-          type: integer
-        revisionType:
-          type: string
-          enum: [ ADD, MOD, DEL ]
-        revisionInstant:
-          type: string
-          format: date-time
 
-    CountryAuditResponse:
+    ErrorResponse:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-          maxLength: 32
-        alpha2:
-          type: string
-          maxLength: 2
-        alpha3:
-          type: string
-          maxLength: 3
         status:
-          type: string
-          maxLength: 64
-        revisionNumber:
           type: integer
-        revisionType:
+          description: "HTTP статус ошибки"
+          example: 500
+        message:
           type: string
-          enum: [ ADD, MOD, DEL ]
-        revisionInstant:
+          description: "Сообщение об ошибке"
+          example: "Произошла внутренняя ошибка"
+        details:
           type: string
-          format: date-time
-
-    AddressAuditResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        countryId:
-          type: integer
-          format: int64
-        address:
-          type: string
-          maxLength: 128
-        zipCode:
-          type: string
-          maxLength: 32
-        city:
-          type: string
-          maxLength: 32
-        state:
-          type: string
-          maxLength: 32
-        archived:
-          type: string
-          format: date-time
-          x-field-type: instant
-        revisionNumber:
-          type: integer
-        revisionType:
-          type: string
-          enum: [ ADD, MOD, DEL ]
-        revisionInstant:
-          type: string
-          format: date-time
-          x-field-type: instant 
+          description: "Дополнительные детали ошибки"
+          example: "Exception stack trace..." 

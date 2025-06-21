@@ -6,6 +6,7 @@ import com.bnm.personservice.model.IndividualResponse;
 import com.bnm.personservice.service.domain.Individual;
 import com.bnm.personservice.service.domain.User;
 import org.hibernate.envers.RevisionType;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,9 +18,6 @@ import java.time.ZoneOffset;
 @Mapper(componentModel = "spring")
 public interface IndividualApiMapper {
 
-    @Mapping(source = "userId", target = "userId")
-    @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
-    @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
     IndividualResponse toResponse(Individual domain);
 
     @Mapping(target = "id", ignore = true)
@@ -27,8 +25,10 @@ public interface IndividualApiMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     Individual toDomain(IndividualRequest request);
 
+    @BeanMapping(ignoreByDefault = true)
     @Mapping(source = "domain.id", target = "id")
     @Mapping(source = "domain.userId", target = "userId")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")

@@ -57,8 +57,8 @@ public class AuditController implements AuditApi {
     }
 
     @Override
-    public ResponseEntity<List<CountryAuditResponse>> getCountryHistory(final Long id) {
-        final List<CountryAuditResponse> history = auditService.getCountryRevisions(id);
+    public ResponseEntity<List<CountryAuditResponse>> getCountryHistory(final Integer id) {
+        final List<CountryAuditResponse> history = auditService.getCountryRevisions(id.longValue());
         if (history.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -66,8 +66,8 @@ public class AuditController implements AuditApi {
     }
 
     @Override
-    public ResponseEntity<CountryAuditResponse> getCountryRevision(final Long id, final Integer rev) {
-        final CountryAuditResponse revision = auditService.getCountryRevision(id, rev);
+    public ResponseEntity<CountryAuditResponse> getCountryRevision(final Integer id, final Integer rev) {
+        final CountryAuditResponse revision = auditService.getCountryRevision(id.longValue(), rev);
         return revision != null ? ResponseEntity.ok(revision) : ResponseEntity.notFound().build();
     }
 
