@@ -1,0 +1,1172 @@
+openapi: 3.0.0
+info:
+  title: Person Service API
+  version: 1.0.0
+  description: |
+    # Сервис управления данными пользователей
+    
+    Этот API предоставляет возможности для:
+    - Управления данными пользователей (создание, обновление, удаление)
+    - Управления адресами и странами
+    - Работы с физическими лицами
+    - Аудита изменений всех сущностей
+    
+    ## Основные сущности
+    - Users (Пользователи)
+    - Individuals (Физические лица)
+    - Addresses (Адреса)
+    - Countries (Страны)
+    
+    ## Статусы
+    - ACTIVE - Активный
+    - VERIFIED - Верифицированный
+    - DELETED - Удаленный
+    
+    ## Аудит
+    Все изменения сущностей отслеживаются в системе аудита.
+    Доступна история изменений и просмотр конкретных ревизий.
+
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+
+tags:
+  - name: person
+    description: Операции с основными сущностями системы- Пользователи, Физические лица, Адреса, Страны
+  - name: audit
+    description: Операции аудита-История изменений сущностей, Просмотр конкретных ревизий, Отслеживание изменений
+
+paths:
+  /api/v1/countries:
+    get:
+      tags:
+        - person
+      summary: Получить список стран
+      description: |
+        Возвращает список всех доступных стран в системе.
+        Страны отсортированы по названию в алфавитном порядке.
+      operationId: getCountries
+      responses:
+        '200':
+          description: |
+            Успешное получение списка стран.
+            Возвращает массив объектов Country.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Country'
+              example:
+                - id: 1
+                  name: "Российская Федерация"
+                  alpha2: "RU"
+                  alpha3: "RUS"
+                  status: "ACTIVE"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                - id: 2
+                  name: "Соединенные Штаты Америки"
+                  alpha2: "US"
+                  alpha3: "USA"
+                  status: "ACTIVE"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      tags:
+        - person
+      summary: Создать новую страну
+      description: |
+        Создает новую страну в системе.
+        Все поля являются обязательными.
+        Alpha2 и Alpha3 коды должны быть уникальными.
+      operationId: createCountry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountryCreate'
+            example:
+              name: "Германия"
+              alpha2: "DE"
+              alpha3: "DEU"
+              status: "ACTIVE"
+      responses:
+        '201':
+          description: |
+            Страна успешно создана.
+            Возвращает созданный объект Country с присвоенным ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+              example:
+                id: 3
+                name: "Германия"
+                alpha2: "DE"
+                alpha3: "DEU"
+                status: "ACTIVE"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
+        '400':
+          description: Некорректные данные запроса
+        '409':
+          description: Конфликт (страна с таким кодом уже существует)
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /api/v1/countries/{id}:
+    get:
+      tags:
+        - person
+      summary: Получить страну по ID
+      operationId: getCountryById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение страны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+    put:
+      tags:
+        - person
+      summary: Обновить страну
+      operationId: updateCountry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountryCreate'
+      responses:
+        '200':
+          description: Страна успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+    delete:
+      tags:
+        - person
+      summary: Удалить страну
+      operationId: deleteCountry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Страна успешно удалена
+
+  /api/v1/addresses:
+    get:
+      tags:
+        - person
+      summary: Получить список адресов
+      operationId: getAddresses
+      responses:
+        '200':
+          description: Успешное получение списка адресов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  country_id: 1
+                  address: "ул. Ленина, д. 1"
+                  zip_code: "123456"
+                  city: "Москва"
+                  state: "Московская область"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                  archived: null
+    post:
+      tags:
+        - person
+      summary: Создать новый адрес
+      operationId: createAddress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressCreate'
+            example:
+              country_id: 1
+              address: "ул. Ленина, д. 1"
+              zip_code: "123456"
+              city: "Москва"
+              state: "Московская область"
+      responses:
+        '201':
+          description: Адрес успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                country_id: 1
+                address: "ул. Ленина, д. 1"
+                zip_code: "123456"
+                city: "Москва"
+                state: "Московская область"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
+
+  /api/v1/addresses/{id}:
+    get:
+      tags:
+        - person
+      summary: Получить адрес по ID
+      operationId: getAddressById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение адреса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+    put:
+      tags:
+        - person
+      summary: Обновить адрес
+      operationId: updateAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressCreate'
+      responses:
+        '200':
+          description: Адрес успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+    delete:
+      tags:
+        - person
+      summary: Удалить адрес
+      operationId: deleteAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Адрес успешно удален
+
+  /api/v1/users:
+    get:
+      tags:
+        - person
+      summary: Получить список пользователей
+      description: |
+        Возвращает список всех пользователей в системе.
+        Пользователи отсортированы по дате создания (сначала новые).
+      operationId: getUsers
+      responses:
+        '200':
+          description: |
+            Успешное получение списка пользователей.
+            Возвращает массив объектов User.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  first_name: "Иван"
+                  last_name: "Иванов"
+                  status: "ACTIVE"
+                  verified_at: "2024-01-01T00:00:00Z"
+                  archived_at: null
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+                  address_id: "550e8400-e29b-41d4-a716-446655440001"
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      tags:
+        - person
+      summary: Создать нового пользователя
+      description: |
+        Создает нового пользователя в системе.
+        Обязательные поля:
+        - first_name
+        - last_name
+        - status
+        - address_id (должен существовать в системе)
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+            example:
+              first_name: "Иван"
+              last_name: "Иванов"
+              status: "ACTIVE"
+              address_id: "550e8400-e29b-41d4-a716-446655440001"
+      responses:
+        '201':
+          description: |
+            Пользователь успешно создан.
+            Возвращает созданный объект User с присвоенным ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Некорректные данные запроса
+        '404':
+          description: Указанный address_id не найден
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - person
+      summary: Получить пользователя по ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      tags:
+        - person
+      summary: Обновить статус верификации пользователя
+      operationId: updateUserVerificationStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerificationUpdate'
+            example:
+              status: "VERIFIED"
+              verified_at: "2024-01-01T00:00:00Z"
+      responses:
+        '200':
+          description: Статус верификации успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - person
+      summary: Обновить пользователя
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '200':
+          description: Пользователь успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags:
+        - person
+      summary: Удалить пользователя
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Пользователь успешно удален
+
+  /api/v1/individuals:
+    get:
+      tags:
+        - person
+      summary: Получить список физических лиц
+      operationId: getIndividuals
+      responses:
+        '200':
+          description: Успешное получение списка физических лиц
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Individual'
+              example:
+                - id: "550e8400-e29b-41d4-a716-446655440000"
+                  user_id: "550e8400-e29b-41d4-a716-446655440001"
+                  passport_number: "1234567890"
+                  phone_number: "+79123456789"
+                  email: "ivan@example.com"
+                  created: "2024-01-01T00:00:00Z"
+                  updated: "2024-01-01T00:00:00Z"
+    post:
+      tags:
+        - person
+      summary: Создать новое физическое лицо
+      operationId: createIndividual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualCreate'
+            example:
+              user_id: "550e8400-e29b-41d4-a716-446655440001"
+              passport_number: "1234567890"
+              phone_number: "+79123456789"
+              email: "ivan@example.com"
+      responses:
+        '201':
+          description: Физическое лицо успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                user_id: "550e8400-e29b-41d4-a716-446655440001"
+                passport_number: "1234567890"
+                phone_number: "+79123456789"
+                email: "ivan@example.com"
+                created: "2024-01-01T00:00:00Z"
+                updated: "2024-01-01T00:00:00Z"
+
+  /api/v1/individuals/{id}:
+    get:
+      tags:
+        - person
+      summary: Получить физическое лицо по ID
+      operationId: getIndividualById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение физического лица
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
+    put:
+      tags:
+        - person
+      summary: Обновить физическое лицо
+      operationId: updateIndividual
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualCreate'
+      responses:
+        '200':
+          description: Физическое лицо успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Individual'
+    delete:
+      tags:
+        - person
+      summary: Удалить физическое лицо
+      operationId: deleteIndividual
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Физическое лицо успешно удалено
+
+  /api/v1/audit/users/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений пользователя
+      operationId: getUserHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/users/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию пользователя
+      operationId: getUserRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/individuals/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений физического лица
+      operationId: getIndividualHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndividualAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/individuals/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию физического лица
+      operationId: getIndividualRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndividualAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/countries/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений страны
+      operationId: getCountryHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/countries/{id}/revisions/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию страны
+      operationId: getCountryRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryAudit'
+        '404':
+          description: Ревизия не найдена
+
+  /api/v1/audit/addresses/{id}/history:
+    get:
+      tags:
+        - audit
+      summary: Получить историю изменений адреса
+      operationId: getAddressHistory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Успешное получение истории изменений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressAudit'
+        '404':
+          description: История изменений не найдена
+
+  /api/v1/audit/addresses/{id}/revision/{rev}:
+    get:
+      tags:
+        - audit
+      summary: Получить конкретную ревизию адреса
+      operationId: getAddressRevision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: rev
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное получение ревизии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressAudit'
+        '404':
+          description: Ревизия не найдена
+
+components:
+  schemas:
+    Country:
+      type: object
+      description: |
+        Страна с основными идентификаторами.
+        - alpha2 и alpha3 - коды стран по ISO 3166
+        - status - текущий статус страны в системе (ACTIVE, DELETED)
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор страны
+        name:
+          type: string
+          maxLength: 32
+          description: Полное название страны
+          example: "Российская Федерация"
+        alpha2:
+          type: string
+          maxLength: 2
+          description: Двухбуквенный код страны по ISO 3166
+          example: "RU"
+        alpha3:
+          type: string
+          maxLength: 3
+          description: Трехбуквенный код страны по ISO 3166
+          example: "RUS"
+        status:
+          type: string
+          maxLength: 32
+          description: Статус страны в системе (например, ACTIVE, DELETED)
+          example: "ACTIVE"
+        created:
+          type: string
+          format: date-time
+          description: Дата и время создания записи
+        updated:
+          type: string
+          format: date-time
+          description: Дата и время последнего обновления
+
+    CountryCreate:
+      type: object
+      required:
+        - name
+        - alpha2
+        - alpha3
+        - status
+      properties:
+        name:
+          type: string
+          maxLength: 32
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          maxLength: 32
+
+    Address:
+      type: object
+      description: |
+        Адрес пользователя.
+        Содержит полную информацию о местоположении.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор адреса
+        country_id:
+          type: integer
+          format: int64
+          description: Идентификатор страны
+        address:
+          type: string
+          maxLength: 128
+          description: Полный адрес (улица, дом, квартира)
+          example: "ул. Ленина, д. 1, кв. 123"
+        zip_code:
+          type: string
+          maxLength: 32
+          description: Почтовый индекс
+          example: "123456"
+        city:
+          type: string
+          maxLength: 32
+          description: Город
+          example: "Москва"
+        state:
+          type: string
+          maxLength: 32
+          description: Регион/область/край
+          example: "Московская область"
+        created:
+          type: string
+          format: date-time
+          description: Дата и время создания записи
+        updated:
+          type: string
+          format: date-time
+          description: Дата и время последнего обновления
+        archived:
+          type: string
+          format: date-time
+          nullable: true
+          description: Дата и время архивации адреса (null если активен)
+
+    AddressCreate:
+      type: object
+      required:
+        - country_id
+        - address
+        - zip_code
+        - city
+      properties:
+        country_id:
+          type: integer
+          format: int64
+        address:
+          type: string
+          maxLength: 128
+        zip_code:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 32
+        state:
+          type: string
+          maxLength: 32
+
+    User:
+      type: object
+      description: |
+        Основная сущность пользователя.
+        Содержит базовую информацию и статус верификации.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор пользователя
+        first_name:
+          type: string
+          maxLength: 32
+          description: Имя пользователя
+          example: "Иван"
+        last_name:
+          type: string
+          maxLength: 32
+          description: Фамилия пользователя
+          example: "Иванов"
+        status:
+          type: string
+          maxLength: 64
+          description: Текущий статус пользователя (например, ACTIVE, VERIFIED, DELETED)
+          example: "ACTIVE"
+        verified_at:
+          type: string
+          format: date-time
+          description: Дата и время верификации пользователя
+        archived_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Дата и время архивации (null если активен)
+        created:
+          type: string
+          format: date-time
+          description: Дата и время создания записи
+        updated:
+          type: string
+          format: date-time
+          description: Дата и время последнего обновления
+        address_id:
+          type: string
+          format: uuid
+          description: Идентификатор основного адреса пользователя
+
+    UserCreate:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - status
+        - address_id
+      properties:
+        first_name:
+          type: string
+          maxLength: 32
+        last_name:
+          type: string
+          maxLength: 32
+        status:
+          type: string
+          maxLength: 64
+        address_id:
+          type: string
+          format: uuid
+
+    UserVerificationUpdate:
+      type: object
+      required:
+        - status
+        - verified_at
+      properties:
+        status:
+          type: string
+          maxLength: 64
+        verified_at:
+          type: string
+          format: date-time
+
+    Individual:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        passport_number:
+          type: string
+          maxLength: 32
+        phone_number:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          maxLength: 32
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+
+    IndividualCreate:
+      type: object
+      required:
+        - user_id
+        - passport_number
+        - phone_number
+        - email
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        passport_number:
+          type: string
+          maxLength: 32
+        phone_number:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          maxLength: 32
+
+    UserAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          maxLength: 32
+        lastName:
+          type: string
+          maxLength: 32
+        status:
+          type: string
+          maxLength: 64
+        verifiedAt:
+          type: string
+          format: date-time
+          x-field-type: instant
+        archivedAt:
+          type: string
+          format: date-time
+          x-field-type: instant
+        addressId:
+          type: string
+          format: uuid
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+          x-field-type: instant
+
+    IndividualAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        passport_number:
+          type: string
+          maxLength: 32
+        phone_number:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          maxLength: 32
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+
+    CountryAudit:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          maxLength: 32
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
+          maxLength: 64
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+
+    AddressAudit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        countryId:
+          type: integer
+          format: int64
+        address:
+          type: string
+          maxLength: 128
+        zipCode:
+          type: string
+          maxLength: 32
+        city:
+          type: string
+          maxLength: 32
+        state:
+          type: string
+          maxLength: 32
+        archived:
+          type: string
+          format: date-time
+          x-field-type: instant
+        revisionNumber:
+          type: integer
+        revisionType:
+          type: string
+          enum: [ ADD, MOD, DEL ]
+        revisionInstant:
+          type: string
+          format: date-time
+          x-field-type: instant 

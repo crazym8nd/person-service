@@ -1,0 +1,289 @@
+package com.bnm.personservice.api;
+
+import com.bnm.personservice.PersonServiceApplication;
+import com.bnm.personservice.TestcontainersConfiguration;
+import com.bnm.personservice.model.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullableModule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest(classes = PersonServiceApplication.class)
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Import(TestcontainersConfiguration.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class UserApiImplTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper.registerModule(new JsonNullableModule());
+    }
+
+    private Country createTestCountry() throws Exception {
+        final CountryCreate countryCreate = new CountryCreate()
+                .name("United States")
+                .alpha2("US")
+                .alpha3("USA")
+                .status("ACTIVE");
+
+        final MvcResult mvcResult = mockMvc.perform(post("/api/v1/countries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(countryCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                Country.class
+        );
+    }
+
+    private Address createTestAddress(final Country country) throws Exception {
+        final AddressCreate addressCreate = new AddressCreate()
+                .countryId(country.getId())
+                .address("123 Main Street")
+                .zipCode("12345")
+                .city("New York")
+                .state("NY");
+
+        final MvcResult mvcResult = mockMvc.perform(post("/api/v1/addresses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                Address.class
+        );
+    }
+
+    @Test
+    void createUser_shouldCreateNewUser() throws Exception {
+        // given
+        final Country country = createTestCountry();
+        final Address address = createTestAddress(country);
+
+        final UserCreate userCreate = new UserCreate()
+                .firstName("John")
+                .lastName("Doe")
+                .status("ACTIVE")
+                .addressId(address.getId());
+
+        // when
+        final MvcResult mvcResult = mockMvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        final User createdUser = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        assertThat(createdUser.getId()).isNotNull();
+        assertThat(createdUser.getFirstName()).isEqualTo(userCreate.getFirstName());
+        assertThat(createdUser.getLastName()).isEqualTo(userCreate.getLastName());
+        assertThat(createdUser.getStatus()).isEqualTo(userCreate.getStatus());
+        assertThat(createdUser.getAddressId()).isEqualTo(address.getId());
+        assertThat(createdUser.getVerifiedAt()).isNull();
+        assertThat(createdUser.getArchivedAt()).isNull();
+        assertThat(createdUser.getCreated()).isNotNull()
+                .isBefore(OffsetDateTime.now());
+        assertThat(createdUser.getUpdated()).isNotNull()
+                .isBefore(OffsetDateTime.now());
+    }
+
+    @Test
+    void getUsers_shouldReturnListOfUsers() throws Exception {
+        // given
+        final Country country = createTestCountry();
+        final Address address = createTestAddress(country);
+
+        final UserCreate userCreate = new UserCreate()
+                .firstName("Jane")
+                .lastName("Smith")
+                .status("ACTIVE")
+                .addressId(address.getId());
+
+        // Create test user
+        mockMvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreate)))
+                .andExpect(status().isOk());
+
+        // when
+        final MvcResult mvcResult = mockMvc.perform(get("/api/v1/users"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        final List<User> users = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                new TypeReference<>() {
+                }
+        );
+
+        assertThat(users).hasSize(1);
+        final User user = users.get(0);
+        assertThat(user.getId()).isNotNull();
+        assertThat(user.getFirstName()).isEqualTo(userCreate.getFirstName());
+        assertThat(user.getLastName()).isEqualTo(userCreate.getLastName());
+        assertThat(user.getStatus()).isEqualTo(userCreate.getStatus());
+        assertThat(user.getAddressId()).isEqualTo(address.getId());
+    }
+
+    @Test
+    void getUserById_shouldReturnUser() throws Exception {
+        // given
+        final Country country = createTestCountry();
+        final Address address = createTestAddress(country);
+
+        final UserCreate userCreate = new UserCreate()
+                .firstName("Robert")
+                .lastName("Johnson")
+                .status("ACTIVE")
+                .addressId(address.getId());
+
+        // Create test user
+        final MvcResult createResult = mockMvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final User createdUser = objectMapper.readValue(
+                createResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        // when
+        final MvcResult mvcResult = mockMvc.perform(
+                        get("/api/v1/users/{id}", createdUser.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        final User user = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        assertThat(user.getId()).isEqualTo(createdUser.getId());
+        assertThat(user.getFirstName()).isEqualTo(userCreate.getFirstName());
+        assertThat(user.getLastName()).isEqualTo(userCreate.getLastName());
+        assertThat(user.getStatus()).isEqualTo(userCreate.getStatus());
+        assertThat(user.getAddressId()).isEqualTo(address.getId());
+    }
+
+    @Test
+    void updateUser_shouldUpdateExistingUser() throws Exception {
+        // given
+        final Country country = createTestCountry();
+        final Address address = createTestAddress(country);
+
+        final UserCreate userCreate = new UserCreate()
+                .firstName("Michael")
+                .lastName("Brown")
+                .status("ACTIVE")
+                .addressId(address.getId());
+
+        // Create test user
+        final MvcResult createResult = mockMvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final User createdUser = objectMapper.readValue(
+                createResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        final UserCreate updateRequest = new UserCreate()
+                .firstName("Mike")
+                .lastName("Brown")
+                .status("INACTIVE")
+                .addressId(address.getId());
+
+        // when
+        final MvcResult mvcResult = mockMvc.perform(
+                        put("/api/v1/users/{id}", createdUser.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        final User updatedUser = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        assertThat(updatedUser.getId()).isEqualTo(createdUser.getId());
+        assertThat(updatedUser.getFirstName()).isEqualTo(updateRequest.getFirstName());
+        assertThat(updatedUser.getLastName()).isEqualTo(updateRequest.getLastName());
+        assertThat(updatedUser.getStatus()).isEqualTo(updateRequest.getStatus());
+        assertThat(updatedUser.getAddressId()).isEqualTo(address.getId());
+        assertThat(updatedUser.getUpdated()).isAfter(createdUser.getUpdated());
+    }
+
+    @Test
+    void deleteUser_shouldDeleteExistingUser() throws Exception {
+        // given
+        final Country country = createTestCountry();
+        final Address address = createTestAddress(country);
+
+        final UserCreate userCreate = new UserCreate()
+                .firstName("William")
+                .lastName("Davis")
+                .status("ACTIVE")
+                .addressId(address.getId());
+
+        // Create test user
+        final MvcResult createResult = mockMvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreate)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final User createdUser = objectMapper.readValue(
+                createResult.getResponse().getContentAsString(),
+                User.class
+        );
+
+        // when
+        mockMvc.perform(delete("/api/v1/users/{id}", createdUser.getId()))
+                .andExpect(status().isNoContent());
+
+        // then
+        mockMvc.perform(get("/api/v1/users/{id}", createdUser.getId()))
+                .andExpect(status().isNotFound());
+    }
+} 

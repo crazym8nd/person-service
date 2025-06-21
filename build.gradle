@@ -44,9 +44,9 @@ dependencies {
     implementation "jakarta.annotation:jakarta.annotation-api:${jakartaAnnotationApiVersion}"
 
     // OpenAPI Generator
-//    implementation("org.openapitools:openapi-generator-gradle-plugin:${openApiGeneratorVersion}") {
-//        exclude group: 'org.slf4j', module: 'slf4j-simple'
-//    }
+    implementation("org.openapitools:openapi-generator-gradle-plugin:${openApiGeneratorVersion}") {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -81,103 +81,103 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-//sourceSets {
-//    main {
-//        java {
-//            srcDirs += [
-//                    "$buildDir/generated/src/main/java"
-//            ]
-//        }
-//    }
-//}
-
-compileJava {
-//    dependsOn tasks.openApiGenerate
+sourceSets {
+    main {
+        java {
+            srcDirs += [
+                    "$buildDir/generated/src/main/java"
+            ]
+        }
+    }
 }
 
-//openApiGenerate {
-//    generatorName = "spring"
-//    inputSpec = "$rootDir/openapi.yaml"
-//    outputDir = "$buildDir/generated"
-//    apiPackage = "com.bnm.personservice.api"
-//    modelPackage = "com.bnm.personservice.model"
-//    configOptions = [
-//            interfaceOnly                           : "true",
-//            useTags                                 : "true",
-//            useSpringBoot3                          : "true",
-//            sourceFolder                            : "src/main/java",
-//            skipDefaultInterface                    : "true",
-//            dateLibrary                             : "java8",
-//            java8                                   : "true",
-//            useBeanValidation                       : "true",
-//            useOptional                             : "true",
-//            useSpringController                     : "true",
-//            implicitHeaders                         : "true",
-//            useLombok                               : "true",
-//            generateOperationBody                   : "true",
-//            disallowAdditionalPropertiesIfNotPresent: "true",
-//            openApiNullable                         : "false"
-//    ]
-//    typeMappings = [
-//            instant: "java.time.Instant"
-//    ]
-//    importMappings = [
-//            "Instant": "java.time.Instant"
-//    ]
-//}
-//
-//task generateJavaClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
-//    generatorName = "java"
-//    inputSpec = "$rootDir/openapi.yaml"
-//    outputDir = "$buildDir/generated/java-client"
-//    apiPackage = "com.bnm.personservice.client.api"
-//    modelPackage = "com.bnm.personservice.client.model"
-//    invokerPackage = "com.bnm.personservice.client.invoker"
-//    configOptions = [
-//            dateLibrary               : "java8",
-//            java8                     : "true",
-//            useJakartaEe              : "true",
-//            useBeanValidation         : "true",
-//            generateApiTests          : "true",
-//            generateModelTests        : "true",
-//            generateApiDocumentation  : "true",
-//            generateModelDocumentation: "true"
-//    ]
-//}
-//
-//task generateJavaClientJar(type: Jar) {
-//    dependsOn tasks.generateJavaClient, tasks.openApiGenerate
-//    from "$buildDir/generated/java-client/src/main/java"
-//    include 'com/bnm/personservice/client/**'
-//    archiveClassifier = 'java-client'
-//}
-//
-//task generateApiJar(type: Jar) {
-//    dependsOn tasks.openApiGenerate
-//    from sourceSets.main.output
-//    include 'com/bnm/personservice/api/**'
-//    include 'com/bnm/personservice/model/**'
-//    include 'com/bnm/personservice/invoker/**'
-//    archiveClassifier = 'api'
-//}
-//
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            from components.java
-//            groupId = 'com.bnm'
-//            artifactId = 'person-service'
-//            version = '1.0-SNAPSHOT'
-//
-//            artifact generateApiJar
-//            artifact generateJavaClientJar
-//        }
-//    }
-//    repositories {
-//        mavenLocal()
-//    }
-//}
-//
-//clean {
-//    delete "$buildDir/generated"
-//}
+compileJava {
+    dependsOn tasks.openApiGenerate
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$rootDir/openapi.yaml"
+    outputDir = "$buildDir/generated"
+    apiPackage = "com.bnm.personservice.api"
+    modelPackage = "com.bnm.personservice.model"
+    configOptions = [
+            interfaceOnly                           : "true",
+            useTags                                 : "true",
+            useSpringBoot3                          : "true",
+            sourceFolder                            : "src/main/java",
+            skipDefaultInterface                    : "true",
+            dateLibrary                             : "java8",
+            java8                                   : "true",
+            useBeanValidation                       : "true",
+            useOptional                             : "true",
+            useSpringController                     : "true",
+            implicitHeaders                         : "true",
+            useLombok                               : "true",
+            generateOperationBody                   : "true",
+            disallowAdditionalPropertiesIfNotPresent: "true",
+            openApiNullable                         : "false"
+    ]
+    typeMappings = [
+            instant: "java.time.Instant"
+    ]
+    importMappings = [
+            "Instant": "java.time.Instant"
+    ]
+}
+
+task generateJavaClient(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    generatorName = "java"
+    inputSpec = "$rootDir/openapi.yaml"
+    outputDir = "$buildDir/generated/java-client"
+    apiPackage = "com.bnm.personservice.client.api"
+    modelPackage = "com.bnm.personservice.client.model"
+    invokerPackage = "com.bnm.personservice.client.invoker"
+    configOptions = [
+            dateLibrary               : "java8",
+            java8                     : "true",
+            useJakartaEe              : "true",
+            useBeanValidation         : "true",
+            generateApiTests          : "true",
+            generateModelTests        : "true",
+            generateApiDocumentation  : "true",
+            generateModelDocumentation: "true"
+    ]
+}
+
+task generateJavaClientJar(type: Jar) {
+    dependsOn tasks.generateJavaClient, tasks.openApiGenerate
+    from "$buildDir/generated/java-client/src/main/java"
+    include 'com/bnm/personservice/client/**'
+    archiveClassifier = 'java-client'
+}
+
+task generateApiJar(type: Jar) {
+    dependsOn tasks.openApiGenerate
+    from sourceSets.main.output
+    include 'com/bnm/personservice/api/**'
+    include 'com/bnm/personservice/model/**'
+    include 'com/bnm/personservice/invoker/**'
+    archiveClassifier = 'api'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = 'com.bnm'
+            artifactId = 'person-service'
+            version = '1.0-SNAPSHOT'
+
+            artifact generateApiJar
+            artifact generateJavaClientJar
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+clean {
+    delete "$buildDir/generated"
+}
