@@ -1,8 +1,9 @@
 package com.bnm.personservice.mapper;
 
-import com.bnm.personservice.model.Country;
-import com.bnm.personservice.model.CountryAudit;
-import com.bnm.personservice.model.CountryCreate;
+import com.bnm.personservice.entity.CountryEntity;
+import com.bnm.personservice.model.CountryAuditResponse;
+import com.bnm.personservice.model.CountryRequest;
+import com.bnm.personservice.model.CountryResponse;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,14 +23,14 @@ public interface CountryMapper {
     @Mapping(source = "status", target = "status")
     @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
-    Country toDto(com.bnm.personservice.entity.Country entity);
+    CountryResponse toResponse(CountryEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    com.bnm.personservice.entity.Country toEntity(CountryCreate dto);
+    CountryEntity toEntity(CountryRequest dto);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.name", target = "name")
@@ -39,8 +40,8 @@ public interface CountryMapper {
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    CountryAudit toAuditDto(com.bnm.personservice.entity.Country entity, Number revisionNumber,
-                            RevisionType revisionType, Instant revisionInstant);
+    CountryAuditResponse toAuditResponse(CountryEntity entity, Number revisionNumber,
+                                         RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")
     default Integer numberToInteger(final Number number) {
@@ -48,8 +49,8 @@ public interface CountryMapper {
     }
 
     @Named("mapRevisionType")
-    default CountryAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? CountryAudit.RevisionTypeEnum.fromValue(revisionType.name())
+    default CountryAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+        return revisionType != null ? CountryAuditResponse.RevisionTypeEnum.fromValue(revisionType.name())
                 : null;
     }
 

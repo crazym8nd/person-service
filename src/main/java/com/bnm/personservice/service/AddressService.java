@@ -1,9 +1,10 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.Address;
-import com.bnm.personservice.entity.Country;
+import com.bnm.personservice.entity.AddressEntity;
+import com.bnm.personservice.entity.CountryEntity;
 import com.bnm.personservice.mapper.AddressMapper;
-import com.bnm.personservice.model.AddressCreate;
+import com.bnm.personservice.model.AddressRequest;
+import com.bnm.personservice.model.AddressResponse;
 import com.bnm.personservice.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,39 +22,22 @@ public class AddressService {
     private final AddressMapper addressMapper;
 
     @Transactional(readOnly = true)
-    public List<Address> findAll() {
+    public List<AddressEntity> findAll() {
         return addressRepository.findAllWithCountry();
     }
 
     @Transactional(readOnly = true)
-    public Address findById(final UUID id) {
+    public AddressEntity findById(final UUID id) {
         return addressRepository.findByIdWithCountry(id)
                 .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
     }
 
     @Transactional
-    public Address create(final Address address) {
-        return addressRepository.save(address);
-    }
-
-    @Transactional
-    public com.bnm.personservice.model.Address createAddress(final AddressCreate addressCreate) {
-        final Country country = countryService.findById(
-                addressCreate.getCountryId().longValue());
-        final Address address = addressMapper.toEntity(addressCreate, country);
-        return addressMapper.toDto(addressRepository.save(address));
-    }
-
-    @Transactional
-    public Address updateAddress(final UUID id, final AddressCreate addressCreate) {
-        final Address existingAddress = findById(id);
-        final Country country = countryService.findById(addressCreate.getCountryId().longValue());
-        existingAddress.setAddress(addressCreate.getAddress());
-        existingAddress.setZipCode(addressCreate.getZipCode());
-        existingAddress.setCity(addressCreate.getCity());
-        existingAddress.setState(addressCreate.getState());
-        existingAddress.setCountry(country);
-        return addressRepository.save(existingAddress);
+    public AddressResponse createAddress(final AddressRequest addressRequest) {
+        final CountryEntity country = countryService.findById(
+                addressRequest.getCountryId().longValue());
+        final AddressEntity address = addressMapper.toEntity(addressRequest, country);
+        return addressMapper.toResponse(addressRepository.save(address));
     }
 
     @Transactional
@@ -62,8 +46,8 @@ public class AddressService {
     }
 
     @Transactional
-    public Address update(final UUID id, final Address address) {
-        final Address existingAddress = findById(id);
+    public AddressEntity update(final UUID id, final AddressEntity address) {
+        final AddressEntity existingAddress = findById(id);
         existingAddress.setAddress(address.getAddress());
         existingAddress.setZipCode(address.getZipCode());
         existingAddress.setCity(address.getCity());

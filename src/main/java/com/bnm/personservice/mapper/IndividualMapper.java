@@ -1,9 +1,10 @@
 package com.bnm.personservice.mapper;
 
-import com.bnm.personservice.entity.User;
-import com.bnm.personservice.model.Individual;
-import com.bnm.personservice.model.IndividualAudit;
-import com.bnm.personservice.model.IndividualCreate;
+import com.bnm.personservice.entity.IndividualEntity;
+import com.bnm.personservice.entity.UserEntity;
+import com.bnm.personservice.model.IndividualAuditResponse;
+import com.bnm.personservice.model.IndividualRequest;
+import com.bnm.personservice.model.IndividualResponse;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,7 +24,7 @@ public interface IndividualMapper {
     @Mapping(source = "passportNumber", target = "passportNumber")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "email", target = "email")
-    Individual toDto(com.bnm.personservice.entity.Individual entity);
+    IndividualResponse toResponse(IndividualEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -31,7 +32,7 @@ public interface IndividualMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(source = "user", target = "user")
-    com.bnm.personservice.entity.Individual toEntity(IndividualCreate dto, User user);
+    IndividualEntity toEntity(IndividualRequest dto, UserEntity user);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.user.id", target = "userId")
@@ -41,8 +42,8 @@ public interface IndividualMapper {
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    IndividualAudit toAuditDto(com.bnm.personservice.entity.Individual entity, Number revisionNumber,
-                               RevisionType revisionType, Instant revisionInstant);
+    IndividualAuditResponse toAuditResponse(IndividualEntity entity, Number revisionNumber,
+                                            RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")
     default Integer numberToInteger(final Number number) {
@@ -50,8 +51,8 @@ public interface IndividualMapper {
     }
 
     @Named("mapRevisionType")
-    default IndividualAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? IndividualAudit.RevisionTypeEnum.fromValue(revisionType.name())
+    default IndividualAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+        return revisionType != null ? IndividualAuditResponse.RevisionTypeEnum.fromValue(revisionType.name())
                 : null;
     }
 

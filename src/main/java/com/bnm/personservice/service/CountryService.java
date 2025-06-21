@@ -1,6 +1,6 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.Country;
+import com.bnm.personservice.entity.CountryEntity;
 import com.bnm.personservice.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,24 +15,24 @@ public class CountryService {
     private final CountryRepository countryRepository;
 
     @Transactional(readOnly = true)
-    public List<Country> findAll() {
+    public List<CountryEntity> findAll() {
         return countryRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Country findById(final Long id) {
+    public CountryEntity findById(final Long id) {
         return countryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
     }
 
     @Transactional
-    public Country create(final Country country) {
+    public CountryEntity create(final CountryEntity country) {
         return countryRepository.save(country);
     }
 
     @Transactional
-    public Country update(final Long id, final Country country) {
-        final Country existingCountry = findById(id);
+    public CountryEntity update(final Long id, final CountryEntity country) {
+        final CountryEntity existingCountry = findById(id);
         existingCountry.setName(country.getName());
         existingCountry.setAlpha2(country.getAlpha2());
         existingCountry.setAlpha3(country.getAlpha3());

@@ -56,7 +56,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Country'
+                  $ref: '#/components/schemas/CountryResponse'
               example:
                 - id: 1
                   name: "Российская Федерация"
@@ -88,7 +88,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CountryCreate'
+              $ref: '#/components/schemas/CountryRequest'
             example:
               name: "Германия"
               alpha2: "DE"
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Country'
+                $ref: '#/components/schemas/CountryResponse'
               example:
                 id: 3
                 name: "Германия"
@@ -136,7 +136,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Country'
+                $ref: '#/components/schemas/CountryResponse'
     put:
       tags:
         - person
@@ -153,14 +153,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CountryCreate'
+              $ref: '#/components/schemas/CountryRequest'
       responses:
         '200':
           description: Страна успешно обновлена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Country'
+                $ref: '#/components/schemas/CountryResponse'
     delete:
       tags:
         - person
@@ -190,7 +190,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Address'
+                  $ref: '#/components/schemas/AddressResponse'
               example:
                 - id: "550e8400-e29b-41d4-a716-446655440000"
                   country_id: 1
@@ -211,7 +211,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressCreate'
+              $ref: '#/components/schemas/AddressRequest'
             example:
               country_id: 1
               address: "ул. Ленина, д. 1"
@@ -224,7 +224,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: '#/components/schemas/AddressResponse'
               example:
                 id: "550e8400-e29b-41d4-a716-446655440000"
                 country_id: 1
@@ -254,7 +254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: '#/components/schemas/AddressResponse'
     put:
       tags:
         - person
@@ -272,14 +272,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressCreate'
+              $ref: '#/components/schemas/AddressRequest'
       responses:
         '200':
           description: Адрес успешно обновлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: '#/components/schemas/AddressResponse'
     delete:
       tags:
         - person
@@ -315,7 +315,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: '#/components/schemas/UserResponse'
               example:
                 - id: "550e8400-e29b-41d4-a716-446655440000"
                   first_name: "Иван"
@@ -345,7 +345,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/UserRequest'
             example:
               first_name: "Иван"
               last_name: "Иванов"
@@ -359,7 +359,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
         '400':
           description: Некорректные данные запроса
         '404':
@@ -386,7 +386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
     patch:
       tags:
         - person
@@ -404,7 +404,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserVerificationUpdate'
+              $ref: '#/components/schemas/UserVerificationRequest'
             example:
               status: "VERIFIED"
               verified_at: "2024-01-01T00:00:00Z"
@@ -414,7 +414,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
     put:
       tags:
         - person
@@ -432,14 +432,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/UserRequest'
       responses:
         '200':
           description: Пользователь успешно обновлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserResponse'
     delete:
       tags:
         - person
@@ -470,7 +470,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Individual'
+                  $ref: '#/components/schemas/IndividualResponse'
               example:
                 - id: "550e8400-e29b-41d4-a716-446655440000"
                   user_id: "550e8400-e29b-41d4-a716-446655440001"
@@ -489,7 +489,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualCreate'
+              $ref: '#/components/schemas/IndividualRequest'
             example:
               user_id: "550e8400-e29b-41d4-a716-446655440001"
               passport_number: "1234567890"
@@ -501,7 +501,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Individual'
+                $ref: '#/components/schemas/IndividualResponse'
               example:
                 id: "550e8400-e29b-41d4-a716-446655440000"
                 user_id: "550e8400-e29b-41d4-a716-446655440001"
@@ -530,7 +530,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Individual'
+                $ref: '#/components/schemas/IndividualResponse'
     put:
       tags:
         - person
@@ -548,14 +548,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualCreate'
+              $ref: '#/components/schemas/IndividualRequest'
       responses:
         '200':
           description: Физическое лицо успешно обновлено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Individual'
+                $ref: '#/components/schemas/IndividualResponse'
     delete:
       tags:
         - person
@@ -593,7 +593,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserAudit'
+                  $ref: '#/components/schemas/UserAuditResponse'
         '404':
           description: История изменений не найдена
 
@@ -621,7 +621,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserAudit'
+                $ref: '#/components/schemas/UserAuditResponse'
         '404':
           description: Ревизия не найдена
 
@@ -646,7 +646,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IndividualAudit'
+                  $ref: '#/components/schemas/IndividualAuditResponse'
         '404':
           description: История изменений не найдена
 
@@ -674,7 +674,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualAudit'
+                $ref: '#/components/schemas/IndividualAuditResponse'
         '404':
           description: Ревизия не найдена
 
@@ -699,7 +699,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CountryAudit'
+                  $ref: '#/components/schemas/CountryAuditResponse'
         '404':
           description: История изменений не найдена
 
@@ -727,7 +727,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CountryAudit'
+                $ref: '#/components/schemas/CountryAuditResponse'
         '404':
           description: Ревизия не найдена
 
@@ -752,7 +752,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AddressAudit'
+                  $ref: '#/components/schemas/AddressAuditResponse'
         '404':
           description: История изменений не найдена
 
@@ -780,13 +780,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddressAudit'
+                $ref: '#/components/schemas/AddressAuditResponse'
         '404':
           description: Ревизия не найдена
 
 components:
   schemas:
-    Country:
+    CountryResponse:
       type: object
       description: |
         Страна с основными идентификаторами.
@@ -826,7 +826,7 @@ components:
           format: date-time
           description: Дата и время последнего обновления
 
-    CountryCreate:
+    CountryRequest:
       type: object
       required:
         - name
@@ -847,7 +847,7 @@ components:
           type: string
           maxLength: 32
 
-    Address:
+    AddressResponse:
       type: object
       description: |
         Адрес пользователя.
@@ -895,7 +895,7 @@ components:
           nullable: true
           description: Дата и время архивации адреса (null если активен)
 
-    AddressCreate:
+    AddressRequest:
       type: object
       required:
         - country_id
@@ -919,7 +919,7 @@ components:
           type: string
           maxLength: 32
 
-    User:
+    UserResponse:
       type: object
       description: |
         Основная сущность пользователя.
@@ -966,7 +966,7 @@ components:
           format: uuid
           description: Идентификатор основного адреса пользователя
 
-    UserCreate:
+    UserRequest:
       type: object
       required:
         - first_name
@@ -987,7 +987,7 @@ components:
           type: string
           format: uuid
 
-    UserVerificationUpdate:
+    UserVerificationRequest:
       type: object
       required:
         - status
@@ -1000,7 +1000,7 @@ components:
           type: string
           format: date-time
 
-    Individual:
+    IndividualResponse:
       type: object
       properties:
         id:
@@ -1025,7 +1025,7 @@ components:
           type: string
           format: date-time
 
-    IndividualCreate:
+    IndividualRequest:
       type: object
       required:
         - user_id
@@ -1046,7 +1046,7 @@ components:
           type: string
           maxLength: 32
 
-    UserAudit:
+    UserAuditResponse:
       type: object
       properties:
         id:
@@ -1082,7 +1082,7 @@ components:
           format: date-time
           x-field-type: instant
 
-    IndividualAudit:
+    IndividualAuditResponse:
       type: object
       properties:
         id:
@@ -1109,7 +1109,7 @@ components:
           type: string
           format: date-time
 
-    CountryAudit:
+    CountryAuditResponse:
       type: object
       properties:
         id:
@@ -1136,7 +1136,7 @@ components:
           type: string
           format: date-time
 
-    AddressAudit:
+    AddressAuditResponse:
       type: object
       properties:
         id:

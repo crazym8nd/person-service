@@ -1,9 +1,10 @@
 package com.bnm.personservice.mapper;
 
-import com.bnm.personservice.entity.Address;
-import com.bnm.personservice.model.User;
-import com.bnm.personservice.model.UserAudit;
-import com.bnm.personservice.model.UserCreate;
+import com.bnm.personservice.entity.AddressEntity;
+import com.bnm.personservice.entity.UserEntity;
+import com.bnm.personservice.model.UserAuditResponse;
+import com.bnm.personservice.model.UserRequest;
+import com.bnm.personservice.model.UserResponse;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +26,7 @@ public interface UserMapper {
     @Mapping(source = "verifiedAt", target = "verifiedAt", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "archivedAt", target = "archivedAt", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "address.id", target = "addressId")
-    User toDto(com.bnm.personservice.entity.User entity);
+    UserResponse toResponse(UserEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -37,7 +38,7 @@ public interface UserMapper {
     @Mapping(target = "individual", ignore = true)
     @Mapping(target = "secretKey", ignore = true)
     @Mapping(source = "address", target = "address")
-    com.bnm.personservice.entity.User toEntity(UserCreate dto, Address address);
+    UserEntity toEntity(UserRequest dto, AddressEntity address);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.firstName", target = "firstName")
@@ -49,8 +50,8 @@ public interface UserMapper {
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    UserAudit toAuditDto(com.bnm.personservice.entity.User entity, Number revisionNumber,
-                         RevisionType revisionType, Instant revisionInstant);
+    UserAuditResponse toAuditResponse(UserEntity entity, Number revisionNumber,
+                                      RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")
     default Integer numberToInteger(final Number number) {
@@ -58,8 +59,8 @@ public interface UserMapper {
     }
 
     @Named("mapRevisionType")
-    default UserAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? UserAudit.RevisionTypeEnum.fromValue(revisionType.name()) : null;
+    default UserAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+        return revisionType != null ? UserAuditResponse.RevisionTypeEnum.fromValue(revisionType.name()) : null;
     }
 
     @Named("instantToOffsetDateTime")

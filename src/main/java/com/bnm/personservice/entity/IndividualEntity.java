@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "individuals", schema = "person")
 @Getter
 @Setter
-public class Individual extends BaseEntity {
+public class IndividualEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -26,7 +26,7 @@ public class Individual extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
-    private User user;
+    private UserEntity user;
 
     @Column(name = "passport_number", length = 32)
     private String passportNumber;

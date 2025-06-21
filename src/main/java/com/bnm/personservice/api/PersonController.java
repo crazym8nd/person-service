@@ -1,5 +1,8 @@
 package com.bnm.personservice.api;
 
+import com.bnm.personservice.entity.AddressEntity;
+import com.bnm.personservice.entity.CountryEntity;
+import com.bnm.personservice.entity.UserEntity;
 import com.bnm.personservice.mapper.AddressMapper;
 import com.bnm.personservice.mapper.CountryMapper;
 import com.bnm.personservice.mapper.IndividualMapper;
@@ -30,36 +33,36 @@ public class PersonController implements PersonApi {
     private final IndividualMapper individualMapper;
 
     @Override
-    public ResponseEntity<List<Country>> getCountries() {
+    public ResponseEntity<List<CountryResponse>> getCountries() {
         return ResponseEntity.ok(
                 countryService.findAll().stream()
-                        .map(countryMapper::toDto)
+                        .map(countryMapper::toResponse)
                         .toList()
         );
     }
 
     @Override
-    public ResponseEntity<Country> getCountryById(final Integer id) {
+    public ResponseEntity<CountryResponse> getCountryById(final Integer id) {
         return ResponseEntity.ok(
-                countryMapper.toDto(countryService.findById(id.longValue()))
+                countryMapper.toResponse(countryService.findById(id.longValue()))
         );
     }
 
     @Override
-    public ResponseEntity<Country> createCountry(final CountryCreate countryCreate) {
+    public ResponseEntity<CountryResponse> createCountry(final CountryRequest countryRequest) {
         return ResponseEntity.ok(
-                countryMapper.toDto(
-                        countryService.create(countryMapper.toEntity(countryCreate))
+                countryMapper.toResponse(
+                        countryService.create(countryMapper.toEntity(countryRequest))
                 )
         );
     }
 
     @Override
-    public ResponseEntity<Country> updateCountry(final Integer id,
-                                                 final CountryCreate countryCreate) {
+    public ResponseEntity<CountryResponse> updateCountry(final Integer id,
+                                                         final CountryRequest countryRequest) {
         return ResponseEntity.ok(
-                countryMapper.toDto(
-                        countryService.update(id.longValue(), countryMapper.toEntity(countryCreate))
+                countryMapper.toResponse(
+                        countryService.update(id.longValue(), countryMapper.toEntity(countryRequest))
                 )
         );
     }
@@ -71,33 +74,33 @@ public class PersonController implements PersonApi {
     }
 
     @Override
-    public ResponseEntity<List<Address>> getAddresses() {
+    public ResponseEntity<List<AddressResponse>> getAddresses() {
         return ResponseEntity.ok(
                 addressService.findAll().stream()
-                        .map(addressMapper::toDto)
+                        .map(addressMapper::toResponse)
                         .toList()
         );
     }
 
     @Override
-    public ResponseEntity<Address> createAddress(final AddressCreate addressCreate) {
-        return ResponseEntity.ok(addressService.createAddress(addressCreate));
+    public ResponseEntity<AddressResponse> createAddress(final AddressRequest addressRequest) {
+        return ResponseEntity.ok(addressService.createAddress(addressRequest));
     }
 
     @Override
-    public ResponseEntity<Address> getAddressById(final UUID id) {
+    public ResponseEntity<AddressResponse> getAddressById(final UUID id) {
         return ResponseEntity.ok(
-                addressMapper.toDto(addressService.findById(id))
+                addressMapper.toResponse(addressService.findById(id))
         );
     }
 
     @Override
-    public ResponseEntity<Address> updateAddress(final UUID id, final AddressCreate addressCreate) {
-        final com.bnm.personservice.entity.Country country = countryService.findById(
-                addressCreate.getCountryId().longValue());
+    public ResponseEntity<AddressResponse> updateAddress(final UUID id, final AddressRequest addressRequest) {
+        final CountryEntity country = countryService.findById(
+                addressRequest.getCountryId().longValue());
         return ResponseEntity.ok(
-                addressMapper.toDto(
-                        addressService.update(id, addressMapper.toEntity(addressCreate, country))
+                addressMapper.toResponse(
+                        addressService.update(id, addressMapper.toEntity(addressRequest, country))
                 )
         );
     }
@@ -109,39 +112,39 @@ public class PersonController implements PersonApi {
     }
 
     @Override
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.ok(
                 userService.findAll().stream()
-                        .map(userMapper::toDto)
+                        .map(userMapper::toResponse)
                         .toList()
         );
     }
 
     @Override
-    public ResponseEntity<User> createUser(final UserCreate userCreate) {
-        final com.bnm.personservice.entity.Address address = addressService.findById(
-                userCreate.getAddressId());
+    public ResponseEntity<UserResponse> createUser(final UserRequest userRequest) {
+        final AddressEntity address = addressService.findById(
+                userRequest.getAddressId());
         return ResponseEntity.ok(
-                userMapper.toDto(
-                        userService.create(userMapper.toEntity(userCreate, address))
+                userMapper.toResponse(
+                        userService.create(userMapper.toEntity(userRequest, address))
                 )
         );
     }
 
     @Override
-    public ResponseEntity<User> getUserById(final UUID id) {
+    public ResponseEntity<UserResponse> getUserById(final UUID id) {
         return ResponseEntity.ok(
-                userMapper.toDto(userService.findById(id))
+                userMapper.toResponse(userService.findById(id))
         );
     }
 
     @Override
-    public ResponseEntity<User> updateUser(final UUID id, final UserCreate userCreate) {
-        final com.bnm.personservice.entity.Address address = addressService.findById(
-                userCreate.getAddressId());
+    public ResponseEntity<UserResponse> updateUser(final UUID id, final UserRequest userRequest) {
+        final AddressEntity address = addressService.findById(
+                userRequest.getAddressId());
         return ResponseEntity.ok(
-                userMapper.toDto(
-                        userService.update(id, userMapper.toEntity(userCreate, address))
+                userMapper.toResponse(
+                        userService.update(id, userMapper.toEntity(userRequest, address))
                 )
         );
     }
@@ -153,50 +156,50 @@ public class PersonController implements PersonApi {
     }
 
     @Override
-    public ResponseEntity<User> updateUserVerificationStatus(final UUID id,
-                                                             final UserVerificationUpdate userVerificationUpdate) {
+    public ResponseEntity<UserResponse> updateUserVerificationStatus(final UUID id,
+                                                                     final UserVerificationRequest userVerificationRequest) {
         return ResponseEntity.ok(
-                userMapper.toDto(
-                        userService.updateVerificationStatus(id, userVerificationUpdate.getStatus())
+                userMapper.toResponse(
+                        userService.updateVerificationStatus(id, userVerificationRequest.getStatus())
                 )
         );
     }
 
     @Override
-    public ResponseEntity<List<Individual>> getIndividuals() {
+    public ResponseEntity<List<IndividualResponse>> getIndividuals() {
         return ResponseEntity.ok(
                 individualService.findAll().stream()
-                        .map(individualMapper::toDto)
+                        .map(individualMapper::toResponse)
                         .toList()
         );
     }
 
     @Override
-    public ResponseEntity<Individual> createIndividual(final IndividualCreate individualCreate) {
-        final com.bnm.personservice.entity.User user = userService.findById(
-                individualCreate.getUserId());
+    public ResponseEntity<IndividualResponse> createIndividual(final IndividualRequest individualRequest) {
+        final UserEntity user = userService.findById(
+                individualRequest.getUserId());
         return ResponseEntity.ok(
-                individualMapper.toDto(
-                        individualService.create(individualMapper.toEntity(individualCreate, user))
+                individualMapper.toResponse(
+                        individualService.create(individualMapper.toEntity(individualRequest, user))
                 )
         );
     }
 
     @Override
-    public ResponseEntity<Individual> getIndividualById(final UUID id) {
+    public ResponseEntity<IndividualResponse> getIndividualById(final UUID id) {
         return ResponseEntity.ok(
-                individualMapper.toDto(individualService.findById(id))
+                individualMapper.toResponse(individualService.findById(id))
         );
     }
 
     @Override
-    public ResponseEntity<Individual> updateIndividual(final UUID id,
-                                                       final IndividualCreate individualCreate) {
-        final com.bnm.personservice.entity.User user = userService.findById(
-                individualCreate.getUserId());
+    public ResponseEntity<IndividualResponse> updateIndividual(final UUID id,
+                                                               final IndividualRequest individualRequest) {
+        final UserEntity user = userService.findById(
+                individualRequest.getUserId());
         return ResponseEntity.ok(
-                individualMapper.toDto(
-                        individualService.update(id, individualMapper.toEntity(individualCreate, user))
+                individualMapper.toResponse(
+                        individualService.update(id, individualMapper.toEntity(individualRequest, user))
                 )
         );
     }

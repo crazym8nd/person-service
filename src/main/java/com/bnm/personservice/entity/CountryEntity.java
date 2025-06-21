@@ -10,7 +10,7 @@ import org.hibernate.envers.Audited;
 @Table(name = "countries", schema = "person")
 @Getter
 @Setter
-public class Country extends BaseEntity {
+public class CountryEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

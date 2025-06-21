@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "users", schema = "person")
 @Getter
 @Setter
-public class User extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -47,8 +47,8 @@ public class User extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id")
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    private Address address;
+    private AddressEntity address;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private Individual individual;
+    private IndividualEntity individual;
 } 

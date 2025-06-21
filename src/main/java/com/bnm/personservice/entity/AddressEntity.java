@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Audited
-public class Address extends BaseEntity {
+public class AddressEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -27,7 +27,7 @@ public class Address extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id", nullable = false)
-    private Country country;
+    private CountryEntity country;
 
     @Column(name = "address", nullable = false)
     private String address;

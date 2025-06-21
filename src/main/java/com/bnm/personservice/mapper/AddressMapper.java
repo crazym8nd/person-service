@@ -1,9 +1,10 @@
 package com.bnm.personservice.mapper;
 
-import com.bnm.personservice.entity.Country;
-import com.bnm.personservice.model.Address;
-import com.bnm.personservice.model.AddressAudit;
-import com.bnm.personservice.model.AddressCreate;
+import com.bnm.personservice.entity.AddressEntity;
+import com.bnm.personservice.entity.CountryEntity;
+import com.bnm.personservice.model.AddressAuditResponse;
+import com.bnm.personservice.model.AddressRequest;
+import com.bnm.personservice.model.AddressResponse;
 import org.hibernate.envers.RevisionType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +26,7 @@ public interface AddressMapper {
     @Mapping(source = "state", target = "state")
     @Mapping(source = "archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "country.id", target = "countryId")
-    Address toDto(com.bnm.personservice.entity.Address entity);
+    AddressResponse toResponse(AddressEntity entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -34,7 +35,7 @@ public interface AddressMapper {
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "archived", ignore = true)
     @Mapping(source = "country", target = "country")
-    com.bnm.personservice.entity.Address toEntity(AddressCreate dto, Country country);
+    AddressEntity toEntity(AddressRequest dto, CountryEntity country);
 
     @Mapping(source = "entity.id", target = "id")
     @Mapping(source = "entity.country.id", target = "countryId")
@@ -46,8 +47,8 @@ public interface AddressMapper {
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    AddressAudit toAuditDto(com.bnm.personservice.entity.Address entity, Number revisionNumber,
-                            RevisionType revisionType, Instant revisionInstant);
+    AddressAuditResponse toAuditResponse(AddressEntity entity, Number revisionNumber,
+                                         RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")
     default Integer numberToInteger(final Number number) {
@@ -55,8 +56,8 @@ public interface AddressMapper {
     }
 
     @Named("mapRevisionType")
-    default AddressAudit.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
-        return revisionType != null ? AddressAudit.RevisionTypeEnum.fromValue(revisionType.name())
+    default AddressAuditResponse.RevisionTypeEnum mapRevisionType(final RevisionType revisionType) {
+        return revisionType != null ? AddressAuditResponse.RevisionTypeEnum.fromValue(revisionType.name())
                 : null;
     }
 

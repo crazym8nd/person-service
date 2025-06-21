@@ -1,6 +1,6 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.Individual;
+import com.bnm.personservice.entity.IndividualEntity;
 import com.bnm.personservice.repository.IndividualRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,24 +16,24 @@ public class IndividualService {
     private final IndividualRepository individualRepository;
 
     @Transactional(readOnly = true)
-    public List<Individual> findAll() {
+    public List<IndividualEntity> findAll() {
         return individualRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Individual findById(final UUID id) {
+    public IndividualEntity findById(final UUID id) {
         return individualRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Individual not found with id: " + id));
     }
 
     @Transactional
-    public Individual create(final Individual individual) {
+    public IndividualEntity create(final IndividualEntity individual) {
         return individualRepository.save(individual);
     }
 
     @Transactional
-    public Individual update(final UUID id, final Individual updatedIndividual) {
-        final Individual existingIndividual = findById(id);
+    public IndividualEntity update(final UUID id, final IndividualEntity updatedIndividual) {
+        final IndividualEntity existingIndividual = findById(id);
         existingIndividual.setUser(updatedIndividual.getUser());
         existingIndividual.setPassportNumber(updatedIndividual.getPassportNumber());
         existingIndividual.setPhoneNumber(updatedIndividual.getPhoneNumber());

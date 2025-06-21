@@ -1,6 +1,6 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.User;
+import com.bnm.personservice.entity.UserEntity;
 import com.bnm.personservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,32 +17,32 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         return userRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public User findById(final UUID id) {
+    public UserEntity findById(final UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     @Transactional
-    public User create(final User user) {
+    public UserEntity create(final UserEntity user) {
         return userRepository.save(user);
     }
 
     @Transactional
-    public User updateVerificationStatus(final UUID id, final String status) {
-        final User user = findById(id);
+    public UserEntity updateVerificationStatus(final UUID id, final String status) {
+        final UserEntity user = findById(id);
         user.setStatus(status);
         user.setVerifiedAt(Instant.now());
         return userRepository.save(user);
     }
 
     @Transactional
-    public User update(final UUID id, final User updatedUser) {
-        final User existingUser = findById(id);
+    public UserEntity update(final UUID id, final UserEntity updatedUser) {
+        final UserEntity existingUser = findById(id);
         existingUser.setFirstName(updatedUser.getFirstName());
         existingUser.setLastName(updatedUser.getLastName());
         existingUser.setStatus(updatedUser.getStatus());
