@@ -1,6 +1,6 @@
-package com.bnm.personservice.mapper;
+package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.entity.CountryEntity;
+import com.bnm.personservice.domain.Country;
 import com.bnm.personservice.model.CountryAuditResponse;
 import com.bnm.personservice.model.CountryRequest;
 import com.bnm.personservice.model.CountryResponse;
@@ -14,33 +14,29 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 @Mapper(componentModel = "spring")
-public interface CountryMapper {
+public interface CountryApiMapper {
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "alpha2", target = "alpha2")
-    @Mapping(source = "alpha3", target = "alpha3")
-    @Mapping(source = "status", target = "status")
     @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
-    CountryResponse toResponse(CountryEntity entity);
+    CountryResponse toResponse(Country domain);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    CountryEntity toEntity(CountryRequest dto);
+    Country toDomain(CountryRequest request);
 
-    @Mapping(source = "entity.id", target = "id")
-    @Mapping(source = "entity.name", target = "name")
-    @Mapping(source = "entity.alpha2", target = "alpha2")
-    @Mapping(source = "entity.alpha3", target = "alpha3")
-    @Mapping(source = "entity.status", target = "status")
+
+    @Mapping(source = "domain.id", target = "id")
+    @Mapping(source = "domain.name", target = "name")
+    @Mapping(source = "domain.alpha2", target = "alpha2")
+    @Mapping(source = "domain.alpha3", target = "alpha3")
+    @Mapping(source = "domain.status", target = "status")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    CountryAuditResponse toAuditResponse(CountryEntity entity, Number revisionNumber,
+    CountryAuditResponse toAuditResponse(Country domain, Number revisionNumber,
                                          RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")

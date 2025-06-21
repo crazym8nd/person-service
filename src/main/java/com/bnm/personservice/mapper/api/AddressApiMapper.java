@@ -1,7 +1,7 @@
-package com.bnm.personservice.mapper;
+package com.bnm.personservice.mapper.api;
 
-import com.bnm.personservice.entity.AddressEntity;
-import com.bnm.personservice.entity.CountryEntity;
+import com.bnm.personservice.domain.Address;
+import com.bnm.personservice.domain.Country;
 import com.bnm.personservice.model.AddressAuditResponse;
 import com.bnm.personservice.model.AddressRequest;
 import com.bnm.personservice.model.AddressResponse;
@@ -15,18 +15,13 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 @Mapper(componentModel = "spring")
-public interface AddressMapper {
+public interface AddressApiMapper {
 
-    @Mapping(source = "id", target = "id")
     @Mapping(source = "createdAt", target = "created", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "updatedAt", target = "updated", qualifiedByName = "instantToOffsetDateTime")
-    @Mapping(source = "address", target = "address")
-    @Mapping(source = "zipCode", target = "zipCode")
-    @Mapping(source = "city", target = "city")
-    @Mapping(source = "state", target = "state")
     @Mapping(source = "archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "country.id", target = "countryId")
-    AddressResponse toResponse(AddressEntity entity);
+    AddressResponse toResponse(Address domain);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -34,20 +29,20 @@ public interface AddressMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "archived", ignore = true)
-    @Mapping(source = "country", target = "country")
-    AddressEntity toEntity(AddressRequest dto, CountryEntity country);
+    @Mapping(target = "country", source = "country")
+    Address toDomain(AddressRequest request, Country country);
 
-    @Mapping(source = "entity.id", target = "id")
-    @Mapping(source = "entity.country.id", target = "countryId")
-    @Mapping(source = "entity.address", target = "address")
-    @Mapping(source = "entity.zipCode", target = "zipCode")
-    @Mapping(source = "entity.city", target = "city")
-    @Mapping(source = "entity.state", target = "state")
-    @Mapping(source = "entity.archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
+    @Mapping(source = "domain.id", target = "id")
+    @Mapping(source = "domain.country.id", target = "countryId")
+    @Mapping(source = "domain.address", target = "address")
+    @Mapping(source = "domain.zipCode", target = "zipCode")
+    @Mapping(source = "domain.city", target = "city")
+    @Mapping(source = "domain.state", target = "state")
+    @Mapping(source = "domain.archived", target = "archived", qualifiedByName = "instantToOffsetDateTime")
     @Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "numberToInteger")
     @Mapping(source = "revisionType", target = "revisionType", qualifiedByName = "mapRevisionType")
     @Mapping(source = "revisionInstant", target = "revisionInstant", qualifiedByName = "instantToOffsetDateTime")
-    AddressAuditResponse toAuditResponse(AddressEntity entity, Number revisionNumber,
+    AddressAuditResponse toAuditResponse(Address domain, Number revisionNumber,
                                          RevisionType revisionType, Instant revisionInstant);
 
     @Named("numberToInteger")

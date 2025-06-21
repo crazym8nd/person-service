@@ -1,10 +1,8 @@
 package com.bnm.personservice.service;
 
-import com.bnm.personservice.entity.AddressEntity;
-import com.bnm.personservice.entity.CountryEntity;
-import com.bnm.personservice.mapper.AddressMapper;
-import com.bnm.personservice.model.AddressRequest;
-import com.bnm.personservice.model.AddressResponse;
+import com.bnm.personservice.domain.Address;
+import com.bnm.personservice.mapper.persistence.AddressPersistenceMapper;
+import com.bnm.personservice.mapper.persistence.CountryPersistenceMapper;
 import com.bnm.personservice.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,26 +16,21 @@ import java.util.UUID;
 public class AddressService {
 
     private final AddressRepository addressRepository;
-    private final CountryService countryService;
-    private final AddressMapper addressMapper;
+    private final AddressPersistenceMapper addressMapper;
+    private final CountryPersistenceMapper countryPersistenceMapper;
 
     @Transactional(readOnly = true)
-    public List<AddressEntity> findAll() {
-        return addressRepository.findAllWithCountry();
+    public List<Address> findAll() {
+        return addressRepository.findAllWithCountry().stream()
+                .map(addressMapper::toDomain)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public AddressEntity findById(final UUID id) {
+    public Address findById(final UUID id) {
         return addressRepository.findByIdWithCountry(id)
+                .map(addressMapper::toDomain)
                 .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
-    }
-
-    @Transactional
-    public AddressResponse createAddress(final AddressRequest addressRequest) {
-        final CountryEntity country = countryService.findById(
-                addressRequest.getCountryId().longValue());
-        final AddressEntity address = addressMapper.toEntity(addressRequest, country);
-        return addressMapper.toResponse(addressRepository.save(address));
     }
 
     @Transactional
@@ -46,13 +39,23 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressEntity update(final UUID id, final AddressEntity address) {
-        final AddressEntity existingAddress = findById(id);
+    public Address create(final Address address) {
+        final var entity = addressMapper.toEntity(address);
+        final var savedEntity = addressRepository.save(entity);
+        return addressMapper.toDomain(savedEntity);
+    }
+
+    @Transactional
+    public Address update(final UUID id, final Address address) {
+        final var existingAddress = addressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
         existingAddress.setAddress(address.getAddress());
         existingAddress.setZipCode(address.getZipCode());
         existingAddress.setCity(address.getCity());
         existingAddress.setState(address.getState());
-        existingAddress.setCountry(address.getCountry());
-        return addressRepository.save(existingAddress);
+        existingAddress.setCountry(address.getCountry() != null ?
+                countryPersistenceMapper.toEntity(address.getCountry()) : null);
+        final var savedEntity = addressRepository.save(existingAddress);
+        return addressMapper.toDomain(savedEntity);
     }
 } 

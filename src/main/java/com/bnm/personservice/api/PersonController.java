@@ -1,12 +1,9 @@
 package com.bnm.personservice.api;
 
-import com.bnm.personservice.entity.AddressEntity;
-import com.bnm.personservice.entity.CountryEntity;
-import com.bnm.personservice.entity.UserEntity;
-import com.bnm.personservice.mapper.AddressMapper;
-import com.bnm.personservice.mapper.CountryMapper;
-import com.bnm.personservice.mapper.IndividualMapper;
-import com.bnm.personservice.mapper.UserMapper;
+import com.bnm.personservice.mapper.api.AddressApiMapper;
+import com.bnm.personservice.mapper.api.CountryApiMapper;
+import com.bnm.personservice.mapper.api.IndividualApiMapper;
+import com.bnm.personservice.mapper.api.UserApiMapper;
 import com.bnm.personservice.model.*;
 import com.bnm.personservice.service.AddressService;
 import com.bnm.personservice.service.CountryService;
@@ -24,13 +21,13 @@ import java.util.UUID;
 public class PersonController implements PersonApi {
 
     private final CountryService countryService;
-    private final CountryMapper countryMapper;
+    private final CountryApiMapper countryMapper;
     private final AddressService addressService;
-    private final AddressMapper addressMapper;
+    private final AddressApiMapper addressMapper;
     private final UserService userService;
-    private final UserMapper userMapper;
+    private final UserApiMapper userMapper;
     private final IndividualService individualService;
-    private final IndividualMapper individualMapper;
+    private final IndividualApiMapper individualMapper;
 
     @Override
     public ResponseEntity<List<CountryResponse>> getCountries() {
@@ -50,21 +47,17 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<CountryResponse> createCountry(final CountryRequest countryRequest) {
-        return ResponseEntity.ok(
-                countryMapper.toResponse(
-                        countryService.create(countryMapper.toEntity(countryRequest))
-                )
-        );
+        final var domain = countryMapper.toDomain(countryRequest);
+        final var createdCountry = countryService.create(domain);
+        return ResponseEntity.ok(countryMapper.toResponse(createdCountry));
     }
 
     @Override
     public ResponseEntity<CountryResponse> updateCountry(final Integer id,
                                                          final CountryRequest countryRequest) {
-        return ResponseEntity.ok(
-                countryMapper.toResponse(
-                        countryService.update(id.longValue(), countryMapper.toEntity(countryRequest))
-                )
-        );
+        final var domain = countryMapper.toDomain(countryRequest);
+        final var updatedCountry = countryService.update(id.longValue(), domain);
+        return ResponseEntity.ok(countryMapper.toResponse(updatedCountry));
     }
 
     @Override
@@ -84,7 +77,10 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<AddressResponse> createAddress(final AddressRequest addressRequest) {
-        return ResponseEntity.ok(addressService.createAddress(addressRequest));
+        final var country = countryService.findById(addressRequest.getCountryId().longValue());
+        final var domain = addressMapper.toDomain(addressRequest, country);
+        final var createdAddress = addressService.create(domain);
+        return ResponseEntity.ok(addressMapper.toResponse(createdAddress));
     }
 
     @Override
@@ -96,13 +92,10 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<AddressResponse> updateAddress(final UUID id, final AddressRequest addressRequest) {
-        final CountryEntity country = countryService.findById(
-                addressRequest.getCountryId().longValue());
-        return ResponseEntity.ok(
-                addressMapper.toResponse(
-                        addressService.update(id, addressMapper.toEntity(addressRequest, country))
-                )
-        );
+        final var country = countryService.findById(addressRequest.getCountryId().longValue());
+        final var domain = addressMapper.toDomain(addressRequest, country);
+        final var updatedAddress = addressService.update(id, domain);
+        return ResponseEntity.ok(addressMapper.toResponse(updatedAddress));
     }
 
     @Override
@@ -122,13 +115,10 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<UserResponse> createUser(final UserRequest userRequest) {
-        final AddressEntity address = addressService.findById(
-                userRequest.getAddressId());
-        return ResponseEntity.ok(
-                userMapper.toResponse(
-                        userService.create(userMapper.toEntity(userRequest, address))
-                )
-        );
+        final var address = addressService.findById(userRequest.getAddressId());
+        final var domain = userMapper.toDomain(userRequest, address);
+        final var createdUser = userService.create(domain);
+        return ResponseEntity.ok(userMapper.toResponse(createdUser));
     }
 
     @Override
@@ -140,13 +130,10 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<UserResponse> updateUser(final UUID id, final UserRequest userRequest) {
-        final AddressEntity address = addressService.findById(
-                userRequest.getAddressId());
-        return ResponseEntity.ok(
-                userMapper.toResponse(
-                        userService.update(id, userMapper.toEntity(userRequest, address))
-                )
-        );
+        final var address = addressService.findById(userRequest.getAddressId());
+        final var domain = userMapper.toDomain(userRequest, address);
+        final var updatedUser = userService.update(id, domain);
+        return ResponseEntity.ok(userMapper.toResponse(updatedUser));
     }
 
     @Override
@@ -158,11 +145,8 @@ public class PersonController implements PersonApi {
     @Override
     public ResponseEntity<UserResponse> updateUserVerificationStatus(final UUID id,
                                                                      final UserVerificationRequest userVerificationRequest) {
-        return ResponseEntity.ok(
-                userMapper.toResponse(
-                        userService.updateVerificationStatus(id, userVerificationRequest.getStatus())
-                )
-        );
+        final var updatedUser = userService.updateVerificationStatus(id, userVerificationRequest.getStatus());
+        return ResponseEntity.ok(userMapper.toResponse(updatedUser));
     }
 
     @Override
@@ -176,13 +160,9 @@ public class PersonController implements PersonApi {
 
     @Override
     public ResponseEntity<IndividualResponse> createIndividual(final IndividualRequest individualRequest) {
-        final UserEntity user = userService.findById(
-                individualRequest.getUserId());
-        return ResponseEntity.ok(
-                individualMapper.toResponse(
-                        individualService.create(individualMapper.toEntity(individualRequest, user))
-                )
-        );
+        final var domain = individualMapper.toDomain(individualRequest);
+        final var createdIndividual = individualService.create(domain, individualRequest.getUserId());
+        return ResponseEntity.ok(individualMapper.toResponse(createdIndividual));
     }
 
     @Override
@@ -195,13 +175,9 @@ public class PersonController implements PersonApi {
     @Override
     public ResponseEntity<IndividualResponse> updateIndividual(final UUID id,
                                                                final IndividualRequest individualRequest) {
-        final UserEntity user = userService.findById(
-                individualRequest.getUserId());
-        return ResponseEntity.ok(
-                individualMapper.toResponse(
-                        individualService.update(id, individualMapper.toEntity(individualRequest, user))
-                )
-        );
+        final var domain = individualMapper.toDomain(individualRequest);
+        final var updatedIndividual = individualService.update(id, domain);
+        return ResponseEntity.ok(individualMapper.toResponse(updatedIndividual));
     }
 
     @Override
